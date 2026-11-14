@@ -1,373 +1,75 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>AIVIO Studio Mockup</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      width: 1200px;
-      height: 750px;
-      background: #090a0f;
-      color: #f4f4f5;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-    }
-    /* Grid background sutil e limpo */
-    .grid-bg {
-      position: absolute;
-      inset: 0;
-      background-image:
-        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-      background-size: 32px 32px;
-      pointer-events: none;
-    }
-    /* Top bar */
-    .topbar {
-      position: relative;
-      z-index: 10;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 48px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      background: rgba(9, 10, 15, 0.85);
-    }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .brand-logo {
-      width: 28px;
-      height: 28px;
-      background: #2563eb;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 14px;
-      color: #fff;
-    }
-    .brand-title {
-      font-weight: 700;
-      font-size: 16px;
-      letter-spacing: -0.02em;
-    }
-    .brand-sub {
-      color: #71717a;
-      font-weight: 400;
-    }
-    .nav-links {
-      display: flex;
-      gap: 28px;
-      font-size: 13px;
-      color: #a1a1aa;
-    }
-    .top-cta {
-      background: #27272a;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #f4f4f5;
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    /* Conteúdo principal */
-    .main {
-      position: relative;
-      z-index: 10;
-      padding: 32px 48px;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
-
-    .hero-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-    }
-    .hero-info {
-      max-width: 640px;
-    }
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      background: rgba(37, 99, 235, 0.12);
-      border: 1px solid rgba(37, 99, 235, 0.3);
-      color: #60a5fa;
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      border-radius: 999px;
-      margin-bottom: 12px;
-    }
-    .tag-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #3b82f6;
-    }
-    h1 {
-      font-size: 28px;
-      font-weight: 800;
-      line-height: 1.25;
-      letter-spacing: -0.02em;
-      color: #ffffff;
-    }
-    p.sub {
-      margin-top: 8px;
-      font-size: 14px;
-      line-height: 1.5;
-      color: #a1a1aa;
-    }
-    .btn-primary {
-      background: #2563eb;
-      color: #fff;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    /* Cards e Tabela */
-    .dashboard {
-      background: #111218;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-    }
-    .dash-header {
-      background: #161822;
-      padding: 10px 18px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .window-dots {
-      display: flex;
-      gap: 6px;
-    }
-    .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-    }
-    .d-red { background: #ef4444; opacity: 0.8; }
-    .d-yellow { background: #eab308; opacity: 0.8; }
-    .d-green { background: #22c55e; opacity: 0.8; }
-
-    .dash-title {
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 11px;
-      color: #71717a;
-    }
-    .dash-status {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      color: #22c55e;
-      font-weight: 600;
-    }
-    .status-ping {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #22c55e;
-    }
-
-    .kpi-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      padding: 16px 20px;
-      background: rgba(255, 255, 255, 0.015);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    .kpi-card {
-      background: #161822;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      padding: 12px 16px;
-      border-radius: 8px;
-    }
-    .kpi-label {
-      font-size: 11px;
-      color: #71717a;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-    }
-    .kpi-val {
-      font-size: 20px;
-      font-weight: 700;
-      color: #f4f4f5;
-      margin-top: 4px;
-    }
-    .kpi-badge {
-      font-size: 11px;
-      color: #3b82f6;
-      font-weight: 500;
-      margin-left: 6px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12px;
-    }
-    th {
-      text-align: left;
-      padding: 10px 20px;
-      color: #71717a;
-      font-weight: 600;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      background: #141620;
-    }
-    td {
-      padding: 11px 20px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-      color: #d4d4d8;
-    }
-    tr:last-child td {
-      border-bottom: none;
-    }
-    .badge-pill {
-      display: inline-flex;
-      align-items: center;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: 600;
-    }
-    .b-blue {
-      background: rgba(37, 99, 235, 0.15);
-      color: #60a5fa;
-      border: 1px solid rgba(37, 99, 235, 0.3);
-    }
-    .b-green {
-      background: rgba(34, 197, 94, 0.15);
-      color: #4ade80;
-      border: 1px solid rgba(34, 197, 94, 0.3);
-    }
-    .b-zinc {
-      background: rgba(255, 255, 255, 0.06);
-      color: #a1a1aa;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-  </style>
+<meta charset="UTF-8">
+<title>AIVIO Studio · mockup</title>
+<!-- Prévia do AIVIO para o portfólio. Texto tirado da landing publicada
+     (leonardocapella.github.io/site-ai-studio), sem números, nomes ou métricas inventados.
+     Visual na linguagem do portfólio: tinta escura, uma cor de destaque, sem gradiente nem emoji.
+     Sem barra de navegador: a janela do portfólio já desenha uma em volta.
+     Gerar o JPG: abrir em 1200x750 e salvar como public/assets/projetos/aivio.jpg -->
+<style>
+  @font-face { font-family: Unbounded; font-weight: 700; src: url(../app/fonts/unbounded-700.woff2) format("woff2"); }
+  @font-face { font-family: Poppins; font-weight: 400; src: url(../app/fonts/poppins-400.woff2) format("woff2"); }
+  @font-face { font-family: Poppins; font-weight: 500; src: url(../app/fonts/poppins-500.woff2) format("woff2"); }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1200px; height: 750px; background: #0d0d0e; font-family: Poppins, system-ui, sans-serif; color: #ededed; }
+  .browser { height: 100%; display: flex; flex-direction: column; }
+  .chrome { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid #1f1f21; background: #111113; }
+  .chrome i { width: 10px; height: 10px; border-radius: 50%; background: #2c2c2f; }
+  .url { margin-left: 14px; flex: 1; max-width: 460px; padding: 6px 12px; border-radius: 6px; background: #19191b; font: 12px ui-monospace, Menlo, monospace; color: #8b8b90; }
+  .page { flex: 1; padding: 8px 64px 0; display: flex; flex-direction: column; }
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid #1b1b1d; font-size: 13px; color: #9a9aa0; }
+  .logo { font-family: Unbounded; font-size: 15px; color: #ededed; letter-spacing: -.01em; }
+  .logo b { color: #4f8cff; font-weight: 700; }
+  nav ul { display: flex; gap: 26px; list-style: none; }
+  .cta { padding: 8px 14px; border-radius: 8px; background: #ededed; color: #0d0d0e; font-weight: 500; }
+  .hero { display: grid; grid-template-columns: 1.15fr .85fr; gap: 48px; padding: 40px 0 30px; align-items: start; }
+  .eyebrow { font: 11px ui-monospace, Menlo, monospace; letter-spacing: .18em; text-transform: uppercase; color: #8b8b90; }
+  h1 { margin-top: 14px; font-family: Unbounded; font-weight: 700; font-size: 38px; line-height: 1.12; letter-spacing: -.03em; }
+  h1 span { color: #6b6b70; }
+  .lead { margin-top: 16px; max-width: 470px; font-size: 14.5px; line-height: 1.6; color: #a1a1a6; }
+  .lead b { color: #ededed; font-weight: 500; }
+  .form { border: 1px solid #222; border-radius: 12px; padding: 18px; background: #111113; }
+  .form p { font-size: 13px; color: #a1a1a6; margin-bottom: 14px; }
+  .form p b { display: block; font-family: Unbounded; font-size: 14px; color: #ededed; margin-bottom: 4px; }
+  .field { border: 1px solid #262629; border-radius: 8px; padding: 8px 12px; font-size: 13px; color: #6b6b70; margin-bottom: 7px; }
+  .submit { margin-top: 6px; border-radius: 8px; background: #4f8cff; color: #fff; text-align: center; padding: 10px; font-size: 13px; font-weight: 500; }
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; border-top: 1px solid #1b1b1d; padding-top: 26px; }
+  .step { border: 1px solid #1f1f21; border-radius: 12px; padding: 16px; }
+  .step span { font: 12px ui-monospace, Menlo, monospace; color: #4f8cff; }
+  .step h3 { margin-top: 8px; font-family: Unbounded; font-size: 14px; letter-spacing: -.01em; }
+  .step p { margin-top: 6px; font-size: 12.5px; line-height: 1.55; color: #9a9aa0; }
+</style>
 </head>
 <body>
-  <div class="grid-bg"></div>
-
-  <div class="topbar">
-    <div class="brand">
-      <div class="brand-logo">A</div>
-      <div class="brand-title">AIVIO <span class="brand-sub">Studio</span></div>
-    </div>
-    <div class="nav-links">
-      <span>Captação Regional</span>
-      <span>Atendimento Comercial</span>
-      <span>Sites Automáticos</span>
-      <span>Relatórios</span>
-    </div>
-    <div class="top-cta">Painel da Unidade</div>
-  </div>
-
-  <div class="main">
-    <div class="hero-header">
-      <div class="hero-info">
-        <div class="tag"><span class="tag-dot"></span> Automação Comercial & Leads Locais</div>
-        <h1>Captação regional de clientes com qualificação em tempo real.</h1>
-        <p class="sub">Automação completa para negócios locais: localização de oportunidades na região, contato inicial e agendamento comercial direto na agenda.</p>
-      </div>
-      <button class="btn-primary">Novo Fluxo de Captação</button>
-    </div>
-
-    <div class="dashboard">
-      <div class="dash-header">
-        <div class="window-dots">
-          <div class="dot d-red"></div>
-          <div class="dot d-yellow"></div>
-          <div class="dot d-green"></div>
+  <div class="browser">
+    <div class="page">
+      <nav>
+        <div class="logo"><b>AIVIO</b> Studio</div>
+        <ul><li>Como funciona</li><li>Captar leads</li><li>Planos</li><li>FAQ</li></ul>
+        <div class="cta">Criar meu site grátis</div>
+      </nav>
+      <div class="hero">
+        <div>
+          <p class="eyebrow">Agentes para negócios locais</p>
+          <h1>Seu negócio captando clientes <span>perto de você.</span></h1>
+          <p class="lead">Você não precisa de site, programador ou agência. Os agentes encontram clientes na sua região, conversam pelo WhatsApp e <b>criam o site do seu negócio em 1 clique.</b></p>
         </div>
-        <div class="dash-title">app.aivio.studio / painel-operacional</div>
-        <div class="dash-status"><span class="status-ping"></span> Operação Ativa · 100% online</div>
-      </div>
-
-      <div class="kpi-row">
-        <div class="kpi-card">
-          <div class="kpi-label">Contatos locais identificados</div>
-          <div class="kpi-val">142 <span class="kpi-badge">+18% esta semana</span></div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Tempo médio de resposta</div>
-          <div class="kpi-val">38 segundos <span class="kpi-badge">automação direta</span></div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Reuniões agendadas</div>
-          <div class="kpi-val">28 confirmadas <span class="kpi-badge">87% presença</span></div>
+        <div class="form">
+          <p><b>Cadastre seu negócio grátis</b>Sem cartão, sem compromisso.</p>
+          <div class="field">Seu nome</div>
+          <div class="field">WhatsApp</div>
+          <div class="field">Nome do negócio</div>
+          <div class="field">Ramo de atuação</div>
+          <div class="submit">Cadastrar</div>
         </div>
       </div>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Lead / Empresa</th>
-            <th>Região / Cidade</th>
-            <th>Origem</th>
-            <th>Distância</th>
-            <th>Status do Atendimento</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Carlos Eduardo</strong> · Mecânica Silva</td>
-            <td>Porto Alegre · Zona Norte</td>
-            <td>Google Negócios</td>
-            <td>1,2 km</td>
-            <td><span class="badge-pill b-green">Qualificado · Orçamento Enviado</span></td>
-          </tr>
-          <tr>
-            <td><strong>Mariana Souza</strong> · Odonto Prime</td>
-            <td>Porto Alegre · Petrópolis</td>
-            <td>Busca Regional</td>
-            <td>2,4 km</td>
-            <td><span class="badge-pill b-blue">Reunião Agendada · Hoje 15h</span></td>
-          </tr>
-          <tr>
-            <td><strong>Felipe Becker</strong> · Becker Advocacia</td>
-            <td>Porto Alegre · Moinhos</td>
-            <td>Indicação Direta</td>
-            <td>3,8 km</td>
-            <td><span class="badge-pill b-green">Proposta em Análise</span></td>
-          </tr>
-          <tr>
-            <td><strong>Ana Beatriz</strong> · Studio Pilates</td>
-            <td>Porto Alegre · Bela Vista</td>
-            <td>WhatsApp Lead</td>
-            <td>4,1 km</td>
-            <td><span class="badge-pill b-zinc">Primeiro Contato Realizado</span></td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="steps">
+        <div class="step"><span>01</span><h3>Cadastre o negócio</h3><p>Nome, o que você faz e onde você atende. Leva menos de 1 minuto.</p></div>
+        <div class="step"><span>02</span><h3>O agente cria e capta</h3><p>Gera o site, publica e passa a captar clientes perto da sua região.</p></div>
+        <div class="step"><span>03</span><h3>Receba os leads</h3><p>Cada interessado chega no seu WhatsApp com nome, interesse e distância.</p></div>
+      </div>
     </div>
   </div>
 </body>

@@ -9,7 +9,7 @@ export const PROFILE = {
   email: "leonardowommercapella@gmail.com",
   city: "Porto Alegre, RS",
   cv: "/assets/curriculo-leonardo-capella.pdf",
-  photo: "/assets/foto-leonardo-fundo-preto-v3.jpg", // seção Sobre (recorte centrado nos olhos)
+  photo: "/assets/foto-leonardo-fundo-preto-v4.jpg", // seção Sobre (recorte do Alfredo, sem mexer)
   badgePhoto: "/assets/foto-leonardo-fundo-branco.jpg", // crachá do hero
   linkedin: "https://www.linkedin.com/in/leonardo-capella-24223a392",
   github: "https://github.com/leonardocapella",

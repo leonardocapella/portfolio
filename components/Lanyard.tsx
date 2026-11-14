@@ -94,7 +94,7 @@ function Band({ maxSpeed = 50, minSpeed = 10, active = true }: { maxSpeed?: numb
   useRopeJoint(fixed, j1, [[0, 0, 0], [0, 0, 0], 1]);
   useRopeJoint(j1, j2, [[0, 0, 0], [0, 0, 0], 1]);
   useRopeJoint(j2, j3, [[0, 0, 0], [0, 0, 0], 1]);
-  useSphericalJoint(j3, card, [[0, 0, 0], [0, 1.3, 0]]); // topo da argola
+  useSphericalJoint(j3, card, [[0, 0, 0], [0, 1.45, 0]]); // topo da argola; 1.45 > 1.125 deixa a fita folgada e o crachá não cai
 
   // recoloca o cordão em repouso, de frente para a câmera
   const resetPose = useRef(() => {});
@@ -103,7 +103,7 @@ function Band({ maxSpeed = 50, minSpeed = 10, active = true }: { maxSpeed?: numb
     anchorX.current = 0;
     fixed.current.setTranslation({ x: ANCHOR.x, y: ANCHOR.y, z: 0 }, true);
     [j1, j2, j3, card].forEach((r, i) => {
-        r.current.setTranslation({ x: ANCHOR.x, y: [4.2, 3.2, 2.2, 0.9][i], z: 0 }, true);
+        r.current.setTranslation({ x: ANCHOR.x, y: [4.2, 3.2, 2.2, 0.75][i], z: 0 }, true);
         r.current.setRotation({ x: 0, y: 0, z: 0, w: 1 }, true);
         r.current.setLinvel({ x: 0, y: 0, z: 0 }, true);
         r.current.setAngvel({ x: 0, y: 0, z: 0 }, true);
@@ -165,7 +165,7 @@ function Band({ maxSpeed = 50, minSpeed = 10, active = true }: { maxSpeed?: numb
         <RigidBody ref={j1} {...seg} position={[0, 4.2, 0]}><BallCollider args={[0.1]} /></RigidBody>
         <RigidBody ref={j2} {...seg} position={[0, 3.2, 0]}><BallCollider args={[0.1]} /></RigidBody>
         <RigidBody ref={j3} {...seg} position={[0, 2.2, 0]}><BallCollider args={[0.1]} /></RigidBody>
-        <RigidBody ref={card} {...seg} position={[0, 0.9, 0]} type={dragged ? "kinematicPosition" : "dynamic"} enabledRotations={[true, false, true]}>
+        <RigidBody ref={card} {...seg} position={[0, 0.75, 0]} type={dragged ? "kinematicPosition" : "dynamic"} enabledRotations={[true, false, true]}>
           <CuboidCollider args={[0.8, 1.125, 0.01]} />
           <group position={[0, 0, -0.05]}
             onPointerOver={() => (document.body.style.cursor = "grab")}
@@ -202,9 +202,9 @@ function Band({ maxSpeed = 50, minSpeed = 10, active = true }: { maxSpeed?: numb
           </group>
         </RigidBody>
       </group>
-      <mesh ref={band} frustumCulled={false} raycast={() => null}>
+      <mesh ref={band} frustumCulled={false} raycast={() => null} renderOrder={-1}>
         <meshLineGeometry />
-        <meshLineMaterial color="white" depthTest={false} resolution={new THREE.Vector2(size.width, size.height)} useMap={1} map={strap} repeat={new THREE.Vector2(-4, 1)} lineWidth={0.75} />
+        <meshLineMaterial color="white" depthTest resolution={new THREE.Vector2(size.width, size.height)} useMap={1} map={strap} repeat={new THREE.Vector2(-4, 1)} lineWidth={0.75} />
       </mesh>
     </>
   );
@@ -255,9 +255,9 @@ function useBadgeTextures() {
     const draw = () => {
       const c = (front.image as HTMLCanvasElement).getContext("2d")!;
       const fw = W - 80 * k, fh = 340 * k, r = fw / fh;
-      const sh = img.height * 0.82, sw = sh * r; // corta um pouco do topo/peito para enquadrar o rosto
+      const sh = img.height * 0.9, sw = sh * r; // folga acima do cabelo
       c.save(); roundRect(c, 40 * k, 120 * k, fw, fh, 18 * k); c.clip();
-      c.drawImage(img, (img.width - sw) / 2, img.height * 0.04, sw, sh, 40 * k, 120 * k, fw, fh);
+      c.drawImage(img, (img.width - sw) / 2, 0, sw, sh, 40 * k, 120 * k, fw, fh);
       c.restore();
       front.needsUpdate = true;
     };

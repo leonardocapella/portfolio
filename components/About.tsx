@@ -56,7 +56,7 @@ export default function About() {
         <Reveal delay={0.2} className="mx-auto w-full max-w-[320px]">
           <motion.div whileHover={{ rotate: -2, scale: 1.02 }} className="relative aspect-square">
             <div className="absolute -inset-3 rounded-full border border-white/10" />
-            <Image src={asset(PROFILE.photo)} alt="Retrato de Leonardo Capella" fill sizes="320px" className="rounded-full object-cover object-[50%_30%] grayscale-[.15]" />
+            <Image src={asset(PROFILE.photo)} alt="Retrato de Leonardo Capella" fill sizes="320px" className="rounded-full object-cover object-[50%_18%] grayscale-[.15]" />
           </motion.div>
         </Reveal>
       </div>

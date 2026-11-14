@@ -40,7 +40,8 @@ function KeyboardCanvas() {
   const [on, setOn] = useState(false);
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
-    const st = ScrollTrigger.create({ trigger: "#skills", start: "top bottom", endTrigger: "#contato", end: "bottom top", onToggle: (s) => setOn(s.isActive) });
+    // canvas só existe entre a entrada de Skills e a entrada de Portfólio
+    const st = ScrollTrigger.create({ trigger: "#skills", start: "top 90%", endTrigger: "#portfolio", end: "top 100%", onToggle: (s) => setOn(s.isActive) });
     setOn(st.isActive);
     return () => st.kill();
   }, []);
@@ -78,8 +79,9 @@ function Board() {
     const tw = (from: Pose, to: Pose, trigger: string, start: string, end: string) =>
       gsap.fromTo(p, { ...from }, { ...to, ease: "power1.inOut", immediateRender: false, scrollTrigger: { trigger, start, end, scrub: 1 } });
     const t = [
-      tw(P.hidden, P.skills, "#skills", "top bottom", "top 15%"),
-      tw(P.skills, P.portfolio, "#portfolio", "top 85%", "top 15%"),
+      tw(P.hidden, P.skills, "#skills", "top 85%", "top 40%"),
+      // sai antes de Portfólio entrar: bottom de #skills fica abaixo do fold (seção é >100svh)
+      tw(P.skills, P.portfolio, "#portfolio", "top bottom", "top 80%"),
     ];
     const st = ScrollTrigger.create({ trigger: "#skills", start: "top 40%", end: "bottom 40%", onToggle: (s) => (interactive.current = s.isActive) });
     ScrollTrigger.refresh();

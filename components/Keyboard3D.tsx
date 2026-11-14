@@ -32,7 +32,7 @@ const MOBILE: typeof POSES = {
 export default function Keyboard3D() {
   // sem WebGL o teclado some; a lista de botões da seção Skills continua funcionando
   return (
-    <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 top-[34svh] z-0 md:inset-0">
+    <div aria-hidden className="absolute inset-x-0 bottom-0 top-[34svh] z-0 md:inset-0">
       <GLBoundary fallback={null}><KeyboardCanvas /></GLBoundary>
     </div>
   );
@@ -50,7 +50,7 @@ function KeyboardCanvas() {
     return () => io.disconnect();
   }, []);
   return (
-    <Canvas frameloop={on ? "always" : "never"} camera={{ position: [0, 0, 14], fov: 32 }} dpr={[1, Math.min(typeof window !== "undefined" ? window.devicePixelRatio : 2, 2)]} eventSource={typeof document !== "undefined" ? document.body : undefined} eventPrefix="client"
+    <Canvas frameloop={on ? "always" : "never"} camera={{ position: [0, 0, 14], fov: 32 }} dpr={[1, Math.min(typeof window !== "undefined" ? window.devicePixelRatio : 2, 2)]}
         gl={{ alpha: true, antialias: true, powerPreference: touch ? "low-power" : "default" }} style={{ background: "transparent" }}>
         <ambientLight intensity={0.6} />
         <directionalLight position={[4, 8, 6]} intensity={2.2} />
@@ -139,11 +139,11 @@ function Key({ tech, position, interactive }: { tech: Tech; position: [number, n
   });
 
   return (
-    <group ref={ref} position={position}
-      onPointerOver={(e) => { if (!interactive.current) return; e.stopPropagation(); hover.current = true; document.body.dataset.keyhover = "1"; }}
-      onPointerOut={() => { hover.current = false; delete document.body.dataset.keyhover; }}
-      onClick={(e) => { if (!interactive.current) return; e.stopPropagation(); dispatchEvent(new CustomEvent("key-press", { detail: tech.id })); }}>
-      <RoundedBox args={[SIZE, H, SIZE]} radius={0.14} smoothness={SMOOTH}>
+    <group ref={ref} position={position}>
+      <RoundedBox args={[SIZE, H, SIZE]} radius={0.14} smoothness={SMOOTH}
+        onPointerOver={(e) => { if (!interactive.current) return; e.stopPropagation(); hover.current = true; document.body.dataset.keyhover = "1"; }}
+        onPointerOut={() => { hover.current = false; delete document.body.dataset.keyhover; }}
+        onClick={(e) => { if (!interactive.current) return; e.stopPropagation(); dispatchEvent(new CustomEvent("key-press", { detail: tech.id })); }}>
         <meshStandardMaterial color={tech.color} roughness={0.35} metalness={0.05} />
       </RoundedBox>
       <mesh rotation-x={-Math.PI / 2} position-y={H / 2 + 0.002}>

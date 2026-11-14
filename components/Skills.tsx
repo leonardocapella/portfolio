@@ -24,7 +24,7 @@ export default function Skills() {
   return (
     <section id="skills" className="relative z-10 overflow-hidden">
       <KeyboardLayer />
-      <div className="relative z-10 mx-auto grid min-h-[150svh] max-w-6xl items-center px-5 pb-[62svh] pt-24 md:min-h-[130svh] md:grid-cols-2 md:px-8">
+      <div className="pointer-events-none relative z-10 mx-auto grid min-h-[150svh] max-w-6xl items-center px-5 pb-[62svh] pt-24 md:min-h-[130svh] md:grid-cols-2 md:px-8">
       <div className="md:sticky md:top-0 md:flex md:min-h-svh md:flex-col md:justify-center md:py-24">
         <Reveal><p className="label">Tech stack</p></Reveal>
         <Reveal delay={0.05}><h2 className="title-xl mt-4 text-[clamp(40px,6vw,84px)]">Skills</h2></Reveal>
@@ -48,7 +48,7 @@ export default function Skills() {
           {KEYS.map((t) => (
             <li key={t.id}>
               <button onClick={() => dispatchEvent(new CustomEvent("key-press", { detail: t.id }))}
-                className={`rounded-md border px-2.5 py-1 font-mono text-[11px] transition-colors ${id === t.id ? "border-white bg-white text-black" : "border-white/10 text-white/50 hover:text-white"}`}>
+                className={`pointer-events-auto rounded-md border px-2.5 py-1 font-mono text-[11px] transition-colors ${id === t.id ? "border-white bg-white text-black" : "border-white/10 text-white/50 hover:text-white"}`}>
                 {t.label}
               </button>
             </li>

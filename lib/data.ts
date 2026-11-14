@@ -12,8 +12,8 @@ export const PROFILE = {
   photo: "/assets/foto-leonardo-fundo-preto.jpg", // seção Sobre
   badgePhoto: "/assets/foto-leonardo-fundo-branco.jpg", // crachá do hero
   linkedin: "https://www.linkedin.com/in/leonardo-capella-24223a392",
-  github: "#", // [PLACEHOLDER] URL do GitHub
-  instagram: "#", // [PLACEHOLDER] URL do Instagram
+  github: "https://github.com/leonardocapella",
+  instagram: "https://www.instagram.com/kpxlla/",
 };
 
 export type Project = {

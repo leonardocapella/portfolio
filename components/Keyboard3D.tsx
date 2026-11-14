@@ -24,7 +24,7 @@ const POSES: Record<"hidden" | "skills" | "portfolio" | "contato", Pose> = {
 };
 const MOBILE: typeof POSES = {
   hidden: { x: 0, y: -9, z: 0, rx: 0, ry: 0, rz: 0, s: 0.52 },
-  skills: { x: 0, y: -2.0, z: 0, rx: 0, ry: 0, rz: 0, s: 0.52 },
+  skills: { x: 0, y: -4.05, z: 0, rx: 0, ry: 0, rz: 0, s: 0.52 },
   portfolio: { x: 0, y: -9, z: 0, rx: 0, ry: 0, rz: 0, s: 0.52 },
   contato: { x: 0, y: -9, z: 0, rx: 0, ry: 0, rz: 0, s: 0.52 },
 };

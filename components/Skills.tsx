@@ -22,15 +22,15 @@ export default function Skills() {
 
   return (
     <section id="skills" className="relative z-10 mx-auto grid min-h-[150svh] md:min-h-[130svh] max-w-6xl items-center px-5 md:grid-cols-2 md:px-8">
-      <div className="pb-[60svh] pt-24 md:sticky md:py-24 md:top-0 md:flex md:min-h-svh md:flex-col md:justify-center">
+      <div className="pb-[62svh] pt-24 md:sticky md:py-24 md:top-0 md:flex md:min-h-svh md:flex-col md:justify-center">
         <Reveal><p className="label">Tech stack</p></Reveal>
         <Reveal delay={0.05}><h2 className="title-xl mt-4 text-[clamp(40px,6vw,84px)]">Skills</h2></Reveal>
         <Reveal delay={0.1}><p className="mt-3 font-mono text-xs text-white/40">(dica: aperte uma tecla)</p></Reveal>
         <div className="mt-10 min-h-[170px]" aria-live="polite">
           <AnimatePresence mode="wait">
             {k ? (
-              <motion.div key={k.id} initial={{ opacity: 0, y: 24, rotate: -4 }} animate={{ opacity: 1, y: 0, rotate: -4 }} exit={{ opacity: 0, y: -16 }}
-                transition={{ type: "spring", stiffness: 300, damping: 24 }} className="origin-left">
+              <motion.div key={k.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
+                transition={{ type: "spring", stiffness: 300, damping: 24 }}>
                 <p className="title-xl text-[clamp(32px,4.5vw,58px)]" style={{ color: lum(k.color) < 0.25 ? k.ink : k.color }}>{k.label}</p>
                 <p className="mt-3 max-w-sm text-lg leading-snug text-white/75">{k.phrase}</p>
               </motion.div>

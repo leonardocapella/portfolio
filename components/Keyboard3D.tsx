@@ -17,37 +17,40 @@ const SMOOTH = typeof window !== "undefined" && isTouch() ? 2 : 4; // menos vér
 // Estados do teclado por seção. x em "meia largura de tela" (−1..1), resto em unidades da cena.
 type Pose = { x: number; y: number; z: number; rx: number; ry: number; rz: number; s: number };
 const POSES: Record<"hidden" | "skills" | "portfolio" | "contato", Pose> = {
-  hidden: { x: 0.45, y: -9, z: 0, rx: 0, ry: 0, rz: 0, s: 0.82 },
-  skills: { x: 0.45, y: 0, z: 0, rx: 0, ry: 0, rz: 0, s: 0.82 },
-  portfolio: { x: 0.45, y: -9, z: 0, rx: 0, ry: 0, rz: 0, s: 0.82 },
-  contato: { x: 0.45, y: -9, z: 0, rx: 0, ry: 0, rz: 0, s: 0.82 },
+  hidden: { x: 0.5, y: 9, z: 0, rx: 0, ry: 0, rz: 0, s: 0.6 },
+  skills: { x: 0.5, y: 0, z: 0, rx: 0, ry: 0, rz: 0, s: 0.6 },
+  portfolio: { x: 0.5, y: 9, z: 0, rx: 0, ry: 0, rz: 0, s: 0.6 },
+  contato: { x: 0.5, y: 9, z: 0, rx: 0, ry: 0, rz: 0, s: 0.6 },
 };
 const MOBILE: typeof POSES = {
-  hidden: { x: 0, y: -9, z: 0, rx: 0, ry: 0, rz: 0, s: 0.52 },
-  skills: { x: 0, y: -4.05, z: 0, rx: 0, ry: 0, rz: 0, s: 0.52 },
-  portfolio: { x: 0, y: -9, z: 0, rx: 0, ry: 0, rz: 0, s: 0.52 },
-  contato: { x: 0, y: -9, z: 0, rx: 0, ry: 0, rz: 0, s: 0.52 },
+  hidden: { x: 0, y: 9, z: 0, rx: 0, ry: 0, rz: 0, s: 0.52 },
+  skills: { x: 0, y: -2.6, z: 0, rx: 0, ry: 0, rz: 0, s: 0.52 },
+  portfolio: { x: 0, y: 9, z: 0, rx: 0, ry: 0, rz: 0, s: 0.52 },
+  contato: { x: 0, y: 9, z: 0, rx: 0, ry: 0, rz: 0, s: 0.52 },
 };
 
 export default function Keyboard3D() {
   // sem WebGL o teclado some; a lista de botões da seção Skills continua funcionando
-  return <GLBoundary fallback={null}><KeyboardCanvas /></GLBoundary>;
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 top-[34svh] z-0 md:inset-0">
+      <GLBoundary fallback={null}><KeyboardCanvas /></GLBoundary>
+    </div>
+  );
 }
 
 function KeyboardCanvas() {
   const touch = useMemo(isTouch, []);
-  // antes da seção Skills o teclado fica escondido: não precisa renderizar
+  // canvas mora dentro de #skills (overflow hidden): fora da seção não existe na tela
   const [on, setOn] = useState(false);
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-    // canvas só existe entre a entrada de Skills e a entrada de Portfólio
-    const st = ScrollTrigger.create({ trigger: "#skills", start: "top 90%", endTrigger: "#portfolio", end: "top 100%", onToggle: (s) => setOn(s.isActive) });
-    setOn(st.isActive);
-    return () => st.kill();
+    const el = document.getElementById("skills");
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => setOn(e.isIntersecting), { rootMargin: "80px" });
+    io.observe(el);
+    return () => io.disconnect();
   }, []);
   return (
-    <div aria-hidden className="pointer-events-none fixed inset-0 z-0">
-      <Canvas frameloop={on ? "always" : "never"} camera={{ position: [0, 0, 14], fov: 32 }} dpr={[1, Math.min(typeof window !== "undefined" ? window.devicePixelRatio : 2, 2)]} eventSource={typeof document !== "undefined" ? document.body : undefined} eventPrefix="client"
+    <Canvas frameloop={on ? "always" : "never"} camera={{ position: [0, 0, 14], fov: 32 }} dpr={[1, Math.min(typeof window !== "undefined" ? window.devicePixelRatio : 2, 2)]} eventSource={typeof document !== "undefined" ? document.body : undefined} eventPrefix="client"
         gl={{ alpha: true, antialias: true, powerPreference: touch ? "low-power" : "default" }} style={{ background: "transparent" }}>
         <ambientLight intensity={0.6} />
         <directionalLight position={[4, 8, 6]} intensity={2.2} />
@@ -58,7 +61,6 @@ function KeyboardCanvas() {
         </Environment>
         <Board />
       </Canvas>
-    </div>
   );
 }
 
@@ -80,8 +82,7 @@ function Board() {
       gsap.fromTo(p, { ...from }, { ...to, ease: "power1.inOut", immediateRender: false, scrollTrigger: { trigger, start, end, scrub: 1 } });
     const t = [
       tw(P.hidden, P.skills, "#skills", "top 85%", "top 40%"),
-      // sai antes de Portfólio entrar: bottom de #skills fica abaixo do fold (seção é >100svh)
-      tw(P.skills, P.portfolio, "#portfolio", "top bottom", "top 80%"),
+      tw(P.skills, P.portfolio, "#skills", "bottom 100%", "bottom 70%"),
     ];
     const st = ScrollTrigger.create({ trigger: "#skills", start: "top 40%", end: "bottom 40%", onToggle: (s) => (interactive.current = s.isActive) });
     ScrollTrigger.refresh();

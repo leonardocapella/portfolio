@@ -190,12 +190,12 @@ function Band({ maxSpeed = 50, minSpeed = 10, active = true }: { maxSpeed?: numb
               <meshPhysicalMaterial attach="material-4" map={front} clearcoat={0.5} clearcoatRoughness={0.3} roughness={0.65} metalness={0} envMapIntensity={0.35} />
               <meshPhysicalMaterial attach="material-5" map={back} clearcoat={0.5} clearcoatRoughness={0.3} roughness={0.65} metalness={0} envMapIntensity={0.35} />
             </mesh>
-            {/* presilha */}
+            {/* presilha: clipe e anel no mesmo eixo, anel acima da fita */}
             <mesh position={[0, 1.2, 0.02]}>
               <boxGeometry args={[0.32, 0.16, 0.06]} />
               <meshStandardMaterial color="#c9c9cc" metalness={1} roughness={0.25} />
             </mesh>
-            <mesh position={[0, 1.33, 0.02]}>
+            <mesh position={[0, 1.32, 0.055]}>
               <torusGeometry args={[0.07, 0.022, 12, 24]} />
               <meshStandardMaterial color="#c9c9cc" metalness={1} roughness={0.25} />
             </mesh>

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { KEYS } from "@/lib/data";
 import Reveal from "./Reveal";
+import KeyboardLayer from "./KeyboardLayer";
 
 // Seção do teclado 3D: o canvas é fixo (Keyboard3D); aqui fica o texto à esquerda
 // e uma fileira de botões acessíveis que disparam as mesmas teclas.
@@ -21,8 +22,10 @@ export default function Skills() {
   const k = KEYS.find((x) => x.id === id);
 
   return (
-    <section id="skills" className="relative z-10 mx-auto grid min-h-[150svh] md:min-h-[130svh] max-w-6xl items-center px-5 md:grid-cols-2 md:px-8">
-      <div className="pb-[62svh] pt-24 md:sticky md:py-24 md:top-0 md:flex md:min-h-svh md:flex-col md:justify-center">
+    <section id="skills" className="relative z-10 overflow-hidden">
+      <KeyboardLayer />
+      <div className="relative z-10 mx-auto grid min-h-[150svh] max-w-6xl items-center px-5 pb-[62svh] pt-24 md:min-h-[130svh] md:grid-cols-2 md:px-8">
+      <div className="md:sticky md:top-0 md:flex md:min-h-svh md:flex-col md:justify-center md:py-24">
         <Reveal><p className="label">Tech stack</p></Reveal>
         <Reveal delay={0.05}><h2 className="title-xl mt-4 text-[clamp(40px,6vw,84px)]">Skills</h2></Reveal>
         <Reveal delay={0.1}><p className="mt-3 font-mono text-xs text-white/40">(dica: aperte uma tecla)</p></Reveal>
@@ -51,6 +54,7 @@ export default function Skills() {
             </li>
           ))}
         </ul>
+      </div>
       </div>
     </section>
   );

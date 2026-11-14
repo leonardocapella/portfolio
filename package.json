@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "build:pages": "GITHUB_PAGES=1 NEXT_PUBLIC_BASE_PATH=/portfolio next build && touch out/.nojekyll",
-    "deploy:pages": "npm run build:pages && cd out && git init -q -b gh-pages && git add -A && git commit -q -m deploy && git push -f https://github.com/leonardocapella/portfolio.git gh-pages && rm -rf .git"
+    "deploy:pages": "npm run build:pages && cd out && git init -q -b gh-pages && git add -A && git -c user.name=\"Leonardo Capella\" -c user.email=leonardowommercapella@gmail.com commit -q -m deploy && git push -q -f https://github.com/leonardocapella/portfolio.git gh-pages && rm -rf .git"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",

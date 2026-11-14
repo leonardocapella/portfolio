@@ -152,6 +152,11 @@ function Band({ maxSpeed = 50, minSpeed = 10, active = true }: { maxSpeed?: numb
     curve.points[2].copy(j1.current.lerped!);
     curve.points[3].copy(fixed.current.translation());
     const pts = curve.getPoints(32);
+    // a fita para no clipe: o último ponto some dentro do metal e não briga com o anel
+    const cardT = card.current.translation();
+    const clipY = cardT.y + 1.2;
+    while (pts.length > 4 && pts[0].y < clipY) pts.shift();
+    if (pts.length && pts[0].y > clipY) pts[0] = pts[0].clone().setY(clipY);
     if (pts.every((v) => Number.isFinite(v.x + v.y + v.z))) band.current.geometry.setPoints(pts);
     ang.copy(card.current.angvel());
     rot.copy(card.current.rotation());
@@ -190,14 +195,15 @@ function Band({ maxSpeed = 50, minSpeed = 10, active = true }: { maxSpeed?: numb
               <meshPhysicalMaterial attach="material-4" map={front} clearcoat={0.5} clearcoatRoughness={0.3} roughness={0.65} metalness={0} envMapIntensity={0.35} />
               <meshPhysicalMaterial attach="material-5" map={back} clearcoat={0.5} clearcoatRoughness={0.3} roughness={0.65} metalness={0} envMapIntensity={0.35} />
             </mesh>
-            {/* presilha: clipe e anel no mesmo eixo, anel acima da fita */}
-            <mesh position={[0, 1.2, 0.02]}>
-              <boxGeometry args={[0.32, 0.16, 0.06]} />
-              <meshStandardMaterial color="#c9c9cc" metalness={1} roughness={0.25} />
+            {/* presilha fixa no cartão (sem corpo físico próprio).
+                Fita termina no clipe (cortada no useFrame), anel fica acima e à frente, sem z-fighting. */}
+            <mesh position={[0, 1.18, -0.03]}>
+              <boxGeometry args={[0.34, 0.2, 0.04]} />
+              <meshStandardMaterial color="#b9b9be" metalness={1} roughness={0.28} />
             </mesh>
-            <mesh position={[0, 1.32, 0.055]}>
-              <torusGeometry args={[0.07, 0.022, 12, 24]} />
-              <meshStandardMaterial color="#c9c9cc" metalness={1} roughness={0.25} />
+            <mesh position={[0, 1.38, 0.05]}>
+              <torusGeometry args={[0.072, 0.02, 14, 28]} />
+              <meshStandardMaterial color="#d5d5d8" metalness={1} roughness={0.2} />
             </mesh>
           </group>
         </RigidBody>

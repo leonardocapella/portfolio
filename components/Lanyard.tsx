@@ -1,26 +1,17 @@
 "use client";
 import * as THREE from "three";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Canvas, extend, useFrame, useThree, type ThreeElement } from "@react-three/fiber";
-import { BallCollider, CuboidCollider, Physics, RigidBody, useRopeJoint, useSphericalJoint, type RapierRigidBody } from "@react-three/rapier";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { Environment, Lightformer } from "@react-three/drei";
-import { MeshLineGeometry, MeshLineMaterial } from "meshline";
 import { canvasTexture, fontVar, roundRect } from "@/lib/canvasTex";
 import { PROFILE } from "@/lib/data";
 import { isTouch } from "@/lib/gfx";
 import GLBoundary from "./GLBoundary";
 import { asset } from "@/lib/base";
 
-extend({ MeshLineGeometry, MeshLineMaterial });
-declare module "@react-three/fiber" {
-  interface ThreeElements {
-    meshLineGeometry: ThreeElement<typeof MeshLineGeometry>;
-    meshLineMaterial: Omit<ThreeElement<typeof MeshLineMaterial>, "args"> & { args?: unknown[] };
-  }
-}
-
-// Crachá 3D num cordão com física (rapier), no espírito do lanyard da Vercel.
-// O ponto de fixação acompanha o mouse de leve; o crachá pode ser arrastado.
+// Crachá 3D. Sem física e sem meshline: a fita é uma faixa reta, a presilha é
+// filha do cartão. O conjunto balança junto, por seno, atrás do mouse.
+// Rapier fazia a fita trocar de forma e o crachá cair parado.
 export default function Lanyard() {
   return <GLBoundary fallback={<BadgeFallback />}><LanyardCanvas /></GLBoundary>;
 }
@@ -43,7 +34,7 @@ function BadgeFallback() {
 
 function LanyardCanvas() {
   const touch = useMemo(isTouch, []);
-  // fora da tela o canvas para (economiza GPU e evita a física acumular passo grande ao voltar)
+  // fora da tela o canvas para
   const wrap = useRef<HTMLDivElement>(null);
   const [on, setOn] = useState(true);
   useEffect(() => {
@@ -55,9 +46,7 @@ function LanyardCanvas() {
     <div ref={wrap} className="absolute inset-0 overflow-hidden">
     <Canvas resize={{ debounce: 0, scroll: false }} frameloop={on ? "always" : "never"} camera={{ position: [0, 0, 13], fov: 25 }} dpr={[1, Math.min(typeof window !== "undefined" ? window.devicePixelRatio : 2, 2)]} gl={{ alpha: true, antialias: true, powerPreference: touch ? "low-power" : "default" }} style={{ background: "transparent" }}>
       <ambientLight intensity={0.5} />
-      <Physics gravity={[0, -40, 0]} timeStep={1 / 60} interpolate>
-        <Band active={on} />
-      </Physics>
+      <Badge />
       <Environment resolution={touch ? 64 : 256} environmentIntensity={0.9}>
         <Lightformer intensity={2} color="white" position={[0, -1, 5]} rotation={[0, 0, Math.PI / 3]} scale={[100, 0.1, 1]} />
         <Lightformer intensity={3} color="white" position={[-1, -1, 1]} rotation={[0, 0, Math.PI / 3]} scale={[100, 0.1, 1]} />
@@ -69,150 +58,57 @@ function LanyardCanvas() {
   );
 }
 
-type Body = RapierRigidBody & { lerped?: THREE.Vector3 };
-const ANCHOR = new THREE.Vector3(0, 5.2, 0);
+// o grupo gira em torno do ponto de fixação, no topo da fita
+const PIVOT_Y = 4.6;
 
-function Band({ maxSpeed = 50, minSpeed = 10, active = true }: { maxSpeed?: number; minSpeed?: number; active?: boolean }) {
-  const band = useRef<THREE.Mesh<MeshLineGeometry>>(null!);
-  const fixed = useRef<Body>(null!), j1 = useRef<Body>(null!), j2 = useRef<Body>(null!), j3 = useRef<Body>(null!), card = useRef<Body>(null!);
-  const { size } = useThree();
-  const [dragged, drag] = useState<THREE.Vector3 | false>(false);
-  const tmp = useMemo(() => ({ vec: new THREE.Vector3(), dir: new THREE.Vector3(), ang: new THREE.Vector3(), rot: new THREE.Vector3() }), []);
-  const [curve] = useState(() => new THREE.CatmullRomCurve3([new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()], false, "chordal"));
-  const mouse = useRef({ x: 0, y: 0 });
-  const anchorX = useRef(0);
+function Badge() {
+  const rig = useRef<THREE.Group>(null!);
+  const mouse = useRef(0);
+  const sway = useRef(0);
   const { front, back, strap } = useBadgeTextures();
 
   useEffect(() => {
-    const m = (e: PointerEvent) => { mouse.current.x = (e.clientX / innerWidth) * 2 - 1; mouse.current.y = (e.clientY / innerHeight) * 2 - 1; };
+    const m = (e: PointerEvent) => { mouse.current = (e.clientX / innerWidth) * 2 - 1; };
     addEventListener("pointermove", m);
     return () => removeEventListener("pointermove", m);
   }, []);
-  useEffect(() => { document.body.style.cursor = dragged ? "grabbing" : ""; }, [dragged]);
 
-  const seg = { type: "dynamic" as const, canSleep: true, colliders: false as const, angularDamping: 2, linearDamping: 2 };
-  useRopeJoint(fixed, j1, [[0, 0, 0], [0, 0, 0], 1]);
-  useRopeJoint(j1, j2, [[0, 0, 0], [0, 0, 0], 1]);
-  useRopeJoint(j2, j3, [[0, 0, 0], [0, 0, 0], 1]);
-  useSphericalJoint(j3, card, [[0, 0, 0], [0, 1.45, 0]]); // topo da argola; 1.45 > 1.125 deixa a fita folgada e o crachá não cai
-
-  // recoloca o cordão em repouso, de frente para a câmera
-  const resetPose = useRef(() => {});
-  resetPose.current = () => {
-    if (!card.current) return;
-    anchorX.current = 0;
-    fixed.current.setTranslation({ x: ANCHOR.x, y: ANCHOR.y, z: 0 }, true);
-    [j1, j2, j3, card].forEach((r, i) => {
-        r.current.setTranslation({ x: ANCHOR.x, y: [4.2, 3.2, 2.2, 0.75][i], z: 0 }, true);
-        r.current.setRotation({ x: 0, y: 0, z: 0, w: 1 }, true);
-        r.current.setLinvel({ x: 0, y: 0, z: 0 }, true);
-        r.current.setAngvel({ x: 0, y: 0, z: 0 }, true);
-        r.current.lerped = undefined;
-      });
-  };
-  // ao voltar para a tela, trocar de aba ou redimensionar: estado limpo em vez de um salto acumulado
-  useEffect(() => { if (active) resetPose.current(); }, [active]);
-  useEffect(() => {
-    const r = () => resetPose.current();
-    const v = () => { if (document.visibilityState === "visible") resetPose.current(); };
-    addEventListener("resize", r);
-    document.addEventListener("visibilitychange", v);
-    return () => { removeEventListener("resize", r); document.removeEventListener("visibilitychange", v); };
-  }, []);
-
-  useFrame((state, delta) => {
-    const { vec, dir, ang, rot } = tmp;
-    if (!fixed.current) return;
-    // se a simulação divergir ou o crachá sair da área visível, recoloca no lugar
-    const c = card.current.translation();
-    if (!dragged && (!Number.isFinite(c.x + c.y + c.z) || Math.abs(c.x - anchorX.current) > 3.5 || c.y > 6 || c.y < -4)) {
-      resetPose.current();
-      return;
-    }
-    // fixação segue o mouse de leve: o crachá balança atrás
-    anchorX.current = THREE.MathUtils.damp(anchorX.current, mouse.current.x * 0.35, 3, delta);
-    fixed.current.setNextKinematicTranslation({ x: ANCHOR.x + anchorX.current, y: ANCHOR.y, z: 0 });
-    if (Math.abs(mouse.current.x) > 0.001) [card, j1, j2, j3].forEach((r) => r.current?.wakeUp());
-
-    if (dragged) {
-      vec.set(state.pointer.x, state.pointer.y, 0.5).unproject(state.camera);
-      dir.copy(vec).sub(state.camera.position).normalize();
-      vec.add(dir.multiplyScalar(state.camera.position.length()));
-      card.current.setNextKinematicTranslation({ x: vec.x - dragged.x, y: vec.y - dragged.y, z: vec.z - dragged.z });
-    }
-    // suaviza os elos do meio (evita tremido ao puxar forte)
-    [j1, j2].forEach((r) => {
-      const b = r.current;
-      if (!b.lerped) b.lerped = new THREE.Vector3().copy(b.translation());
-      const d = Math.max(0.1, Math.min(1, b.lerped.distanceTo(b.translation())));
-      b.lerped.lerp(b.translation(), delta * (minSpeed + d * (maxSpeed - minSpeed)));
-    });
-    curve.points[0].copy(j3.current.translation());
-    curve.points[1].copy(j2.current.lerped!);
-    curve.points[2].copy(j1.current.lerped!);
-    curve.points[3].copy(fixed.current.translation());
-    const pts = curve.getPoints(32);
-    // a fita para no clipe: o último ponto some dentro do metal e não briga com o anel
-    const cardT = card.current.translation();
-    const clipY = cardT.y + 1.2;
-    while (pts.length > 4 && pts[0].y < clipY) pts.shift();
-    if (pts.length && pts[0].y > clipY) pts[0] = pts[0].clone().setY(clipY);
-    if (pts.every((v) => Number.isFinite(v.x + v.y + v.z))) band.current.geometry.setPoints(pts);
-    ang.copy(card.current.angvel());
-    rot.copy(card.current.rotation());
-    card.current.setAngvel({ x: ang.x - rot.x * 0.25, y: 0, z: ang.z }, true);
+  useFrame((_, delta) => {
+    // parado o alvo é 0: o crachá volta ao centro e fica
+    sway.current = THREE.MathUtils.damp(sway.current, mouse.current * 0.1, 2.5, delta);
+    rig.current.rotation.z = sway.current;
   });
 
   return (
-    <>
-      <group position={[0, 0, 0]}>{/* cordão: 3 elos de 1u + crachá; ponto fixo acima do topo */}
-        <RigidBody ref={fixed} {...seg} type="kinematicPosition" position={ANCHOR.toArray()} />
-        <RigidBody ref={j1} {...seg} position={[0, 4.2, 0]}><BallCollider args={[0.1]} /></RigidBody>
-        <RigidBody ref={j2} {...seg} position={[0, 3.2, 0]}><BallCollider args={[0.1]} /></RigidBody>
-        <RigidBody ref={j3} {...seg} position={[0, 2.2, 0]}><BallCollider args={[0.1]} /></RigidBody>
-        <RigidBody ref={card} {...seg} position={[0, 0.75, 0]} type={dragged ? "kinematicPosition" : "dynamic"} enabledRotations={[true, false, true]}>
-          <CuboidCollider args={[0.8, 1.125, 0.01]} />
-          <group position={[0, 0, -0.05]}
-            onPointerOver={() => (document.body.style.cursor = "grab")}
-            onPointerOut={() => (document.body.style.cursor = "")}
-            onPointerUp={(e) => { (e.target as Element).releasePointerCapture(e.pointerId); drag(false); }}
-            onPointerDown={(e) => {
-              // no toque, arrastar brigaria com a rolagem da página: um toque empurra o crachá
-              if (e.pointerType === "touch") {
-                const side = Math.sign(e.point.x - card.current.translation().x) || 1;
-                card.current.applyImpulse({ x: -side * 0.9, y: 0.15, z: 0.5 }, true);
-                return;
-              }
-              (e.target as Element).setPointerCapture(e.pointerId);
-              drag(new THREE.Vector3().copy(e.point).sub(tmp.vec.copy(card.current.translation())));
-            }}>
-            <mesh>
-              <boxGeometry args={[1.6, 2.25, 0.03]} />
-              <meshPhysicalMaterial attach="material-0" color="#1a1a1a" />
-              <meshPhysicalMaterial attach="material-1" color="#1a1a1a" />
-              <meshPhysicalMaterial attach="material-2" color="#1a1a1a" />
-              <meshPhysicalMaterial attach="material-3" color="#1a1a1a" />
-              <meshPhysicalMaterial attach="material-4" map={front} clearcoat={0.5} clearcoatRoughness={0.3} roughness={0.65} metalness={0} envMapIntensity={0.35} />
-              <meshPhysicalMaterial attach="material-5" map={back} clearcoat={0.5} clearcoatRoughness={0.3} roughness={0.65} metalness={0} envMapIntensity={0.35} />
-            </mesh>
-            {/* presilha fixa no cartão (sem corpo físico próprio).
-                Fita termina no clipe (cortada no useFrame), anel fica acima e à frente, sem z-fighting. */}
-            <mesh position={[0, 1.18, -0.03]}>
-              <boxGeometry args={[0.34, 0.2, 0.04]} />
-              <meshStandardMaterial color="#b9b9be" metalness={1} roughness={0.28} />
-            </mesh>
-            <mesh position={[0, 1.38, 0.05]}>
-              <torusGeometry args={[0.072, 0.02, 14, 28]} />
-              <meshStandardMaterial color="#d5d5d8" metalness={1} roughness={0.2} />
-            </mesh>
-          </group>
-        </RigidBody>
-      </group>
-      <mesh ref={band} frustumCulled={false} raycast={() => null} renderOrder={-1}>
-        <meshLineGeometry />
-        <meshLineMaterial color="white" depthTest resolution={new THREE.Vector2(size.width, size.height)} useMap={1} map={strap} repeat={new THREE.Vector2(-4, 1)} lineWidth={0.75} />
+    <group ref={rig} position={[0, PIVOT_Y, 0]}>
+      {/* fita reta, do topo até o clipe. Geometria fixa: não muda de forma. */}
+      <mesh position={[0, -1.15, 0]}>
+        <boxGeometry args={[0.16, 2.3, 0.012]} />
+        <meshStandardMaterial map={strap} roughness={0.6} />
       </mesh>
-    </>
+      <group position={[0, 0.75 - PIVOT_Y, 0]}>
+        <group position={[0, 0, -0.05]}>
+          <mesh>
+            <boxGeometry args={[1.6, 2.25, 0.03]} />
+            <meshPhysicalMaterial attach="material-0" color="#1a1a1a" />
+            <meshPhysicalMaterial attach="material-1" color="#1a1a1a" />
+            <meshPhysicalMaterial attach="material-2" color="#1a1a1a" />
+            <meshPhysicalMaterial attach="material-3" color="#1a1a1a" />
+            <meshPhysicalMaterial attach="material-4" map={front} clearcoat={0.5} clearcoatRoughness={0.3} roughness={0.65} metalness={0} envMapIntensity={0.35} />
+            <meshPhysicalMaterial attach="material-5" map={back} clearcoat={0.5} clearcoatRoughness={0.3} roughness={0.65} metalness={0} envMapIntensity={0.35} />
+          </mesh>
+          {/* presilha: clipe atrás da fita, anel na frente, os dois presos no cartão */}
+          <mesh position={[0, 1.18, -0.03]}>
+            <boxGeometry args={[0.34, 0.2, 0.04]} />
+            <meshStandardMaterial color="#b9b9be" metalness={1} roughness={0.28} />
+          </mesh>
+          <mesh position={[0, 1.5, 0.05]}>
+            <torusGeometry args={[0.075, 0.02, 14, 28]} />
+            <meshStandardMaterial color="#d5d5d8" metalness={1} roughness={0.2} />
+          </mesh>
+        </group>
+      </group>
+    </group>
   );
 }
 
@@ -248,13 +144,16 @@ function useBadgeTextures() {
       c.fillStyle = "#8b8b90"; c.font = `500 ${18 * k}px ui-monospace, monospace`;
       c.fillText("PORTO ALEGRE · RS", W / 2, H - 70 * k);
     });
-    const strap = canvasTexture(2048, 256, (c) => {
-      c.fillStyle = "#3a3a3f"; c.fillRect(0, 0, 2048, 256);
-      c.fillStyle = "#5a5a60"; c.fillRect(0, 0, 2048, 12); c.fillRect(0, 244, 2048, 12);
-      c.fillStyle = "#fff"; c.font = `700 88px ${disp}`; c.textBaseline = "middle";
-      c.fillText("LEONARDO CAPELLA ✦", 72, 136);
+    // faixa vertical: o texto corre de cima pra baixo, uma vez por repetição
+    const strap = canvasTexture(256, 1024, (c) => {
+      c.fillStyle = "#2a2a2e"; c.fillRect(0, 0, 256, 1024);
+      c.fillStyle = "#4a4a50"; c.fillRect(0, 0, 14, 1024); c.fillRect(242, 0, 14, 1024);
+      c.save(); c.translate(128, 512); c.rotate(-Math.PI / 2);
+      c.fillStyle = "#fff"; c.font = `700 92px ${disp}`; c.textAlign = "center"; c.textBaseline = "middle";
+      c.fillText("LEONARDO CAPELLA ✦", 0, 0); c.restore();
     });
     strap.wrapS = strap.wrapT = THREE.RepeatWrapping;
+    strap.repeat.set(1, 3);
     // foto 3x4 (quadrada, fundo branco) recortada no centro para a moldura 432×340
     const img = new Image();
     img.decoding = "async";

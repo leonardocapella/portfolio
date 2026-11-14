@@ -218,29 +218,30 @@ export const PROJECTS: Project[] = [
   },
 ];
 
-export type Tech = { id: string; label: string; icon?: SimpleIcon; text?: string; color: string; ink: string; phrase: string };
+export const GROUPS = ["Linguagens", "Web", "Dados & Backend", "Cloud & Infra", "CRM & Marketing"] as const;
+export type Tech = { id: string; label: string; group: (typeof GROUPS)[number]; icon?: SimpleIcon; text?: string; color: string; ink: string; phrase: string };
 
 // icon = ícone do simple-icons; text = rótulo quando não há ícone (AWS e Kommo não estão no simple-icons)
 export const KEYS: Tech[] = [
-  { id: "js", label: "JavaScript", icon: siJavascript, color: "#F7C21E", ink: "#111111", phrase: "Roda no navegador, no servidor e, se deixar, na geladeira. [] + {} ainda é um mistério." },
-  { id: "ts", label: "TypeScript", icon: siTypescript, color: "#3178C6", ink: "#FFFFFF", phrase: "É o JavaScript depois da terapia: agora ele avisa antes de quebrar." },
-  { id: "py", label: "Python", icon: siPython, color: "#14B8A6", ink: "#FFFFFF", phrase: "Indentação é lei. Uma planilha de mil linhas vira um script de vinte." },
-  { id: "java", label: "Java", icon: siOpenjdk, color: "#F97316", ink: "#FFFFFF", phrase: "public static void main(String[] args) só pra dizer oi. A faculdade manda lembranças." },
-  { id: "cpp", label: "C++", icon: siCplusplus, color: "#8B5CF6", ink: "#FFFFFF", phrase: "Ponteiro, memória e coragem. Segmentation fault é só um 'oi' mal dado." },
-  { id: "sql", label: "SQL", icon: siPostgresql, color: "#4169E1", ink: "#FFFFFF", phrase: "SELECT * FROM problemas WHERE resolvido = false; e depois um UPDATE pra virar true." },
-  { id: "html", label: "HTML", icon: siHtml5, color: "#EF4444", ink: "#FFFFFF", phrase: "Não é linguagem de programação, mas sem ele ninguém vê nada." },
-  { id: "css", label: "CSS", icon: siCss, color: "#A855F7", ink: "#FFFFFF", phrase: "Centralizar uma div já foi rito de passagem. Hoje é display: grid; place-items: center." },
-  { id: "react", label: "React", icon: siReact, color: "#0EA5E9", ink: "#FFFFFF", phrase: "Tudo é componente, inclusive este teclado." },
-  { id: "node", label: "Node.js", icon: siNodedotjs, color: "#16A34A", ink: "#FFFFFF", phrase: "O JavaScript saiu do navegador e foi morar no servidor." },
-  { id: "linux", label: "Linux", icon: siLinux, color: "#27272A", ink: "#FCC624", phrase: "sudo faz-funcionar. O terminal é minha segunda casa." },
-  { id: "aws", label: "AWS", text: "aws", color: "#232F3E", ink: "#FF9900", phrase: "É o computador de outra pessoa, só que com 200 serviços e uma fatura pra vigiar." },
-  { id: "supabase", label: "Supabase", icon: siSupabase, color: "#1C1C1C", ink: "#3ECF8E", phrase: "Postgres com superpoderes: auth, RLS e edge functions. O Hub da V4 roda aqui." },
-  { id: "kommo", label: "Kommo CRM", text: "kommo", color: "#1D2B5B", ink: "#FFFFFF", phrase: "Funil, tag e automação: é aqui que o lead vira cliente. E é aqui que eu caço lead duplicado." },
-  { id: "hubspot", label: "HubSpot", icon: siHubspot, color: "#FF7A59", ink: "#FFFFFF", phrase: "CRM com marketing junto. Se não está no CRM, a reunião não aconteceu." },
-  { id: "meta", label: "Meta Ads", icon: siMeta, color: "#0467DF", ink: "#FFFFFF", phrase: "O anúncio que te seguiu do Instagram até aqui. Pixel bem instalado é metade da campanha." },
-  { id: "gads", label: "Google Ads", icon: siGoogleads, color: "#4285F4", ink: "#FFFFFF", phrase: "Pagar para aparecer em primeiro e torcer para a palavra-chave não ser cara demais." },
-  { id: "ga", label: "Google Analytics", icon: siGoogleanalytics, color: "#E37400", ink: "#FFFFFF", phrase: "Onde a gente descobre que o botão mais bonito era o menos clicado." },
-  { id: "github", label: "GitHub", icon: siGithub, color: "#F4F4F5", ink: "#111111", phrase: "Onde o código mora e onde o 'funciona na minha máquina' é posto à prova." },
+  { id: "js", label: "JavaScript", group: "Linguagens", icon: siJavascript, color: "#F7C21E", ink: "#111111", phrase: "Roda no navegador, no servidor e, se deixar, na geladeira. [] + {} ainda é um mistério." },
+  { id: "ts", label: "TypeScript", group: "Linguagens", icon: siTypescript, color: "#3178C6", ink: "#FFFFFF", phrase: "É o JavaScript depois da terapia: agora ele avisa antes de quebrar." },
+  { id: "py", label: "Python", group: "Linguagens", icon: siPython, color: "#14B8A6", ink: "#FFFFFF", phrase: "Indentação é lei. Uma planilha de mil linhas vira um script de vinte." },
+  { id: "java", label: "Java", group: "Linguagens", icon: siOpenjdk, color: "#F97316", ink: "#FFFFFF", phrase: "public static void main(String[] args) só pra dizer oi. A faculdade manda lembranças." },
+  { id: "cpp", label: "C++", group: "Linguagens", icon: siCplusplus, color: "#8B5CF6", ink: "#FFFFFF", phrase: "Ponteiro, memória e coragem. Segmentation fault é só um 'oi' mal dado." },
+  { id: "sql", label: "SQL", group: "Dados & Backend", icon: siPostgresql, color: "#4169E1", ink: "#FFFFFF", phrase: "SELECT * FROM problemas WHERE resolvido = false; e depois um UPDATE pra virar true." },
+  { id: "html", label: "HTML", group: "Web", icon: siHtml5, color: "#EF4444", ink: "#FFFFFF", phrase: "Não é linguagem de programação, mas sem ele ninguém vê nada." },
+  { id: "css", label: "CSS", group: "Web", icon: siCss, color: "#A855F7", ink: "#FFFFFF", phrase: "Centralizar uma div já foi rito de passagem. Hoje é display: grid; place-items: center." },
+  { id: "react", label: "React", group: "Web", icon: siReact, color: "#0EA5E9", ink: "#FFFFFF", phrase: "Tudo é componente, inclusive este teclado." },
+  { id: "node", label: "Node.js", group: "Dados & Backend", icon: siNodedotjs, color: "#16A34A", ink: "#FFFFFF", phrase: "O JavaScript saiu do navegador e foi morar no servidor." },
+  { id: "linux", label: "Linux", group: "Cloud & Infra", icon: siLinux, color: "#27272A", ink: "#FCC624", phrase: "sudo faz-funcionar. O terminal é minha segunda casa." },
+  { id: "aws", label: "AWS (Amazon Web Services)", group: "Cloud & Infra", text: "aws", color: "#232F3E", ink: "#FFFFFF", phrase: "A nuvem da Amazon: servidor, banco e armazenamento sob demanda. É o computador de outra pessoa, só que com 200 serviços e uma fatura pra vigiar." },
+  { id: "supabase", label: "Supabase", group: "Dados & Backend", icon: siSupabase, color: "#1C1C1C", ink: "#3ECF8E", phrase: "Postgres com superpoderes: auth, RLS e edge functions. O Hub da V4 roda aqui." },
+  { id: "kommo", label: "Kommo CRM", group: "CRM & Marketing", text: "kommo", color: "#1D2B5B", ink: "#FFFFFF", phrase: "Funil, tag e automação: é aqui que o lead vira cliente. E é aqui que eu caço lead duplicado." },
+  { id: "hubspot", label: "HubSpot", group: "CRM & Marketing", icon: siHubspot, color: "#FF7A59", ink: "#FFFFFF", phrase: "CRM com marketing junto. Se não está no CRM, a reunião não aconteceu." },
+  { id: "meta", label: "Meta Ads", group: "CRM & Marketing", icon: siMeta, color: "#0467DF", ink: "#FFFFFF", phrase: "O anúncio que te seguiu do Instagram até aqui. Pixel bem instalado é metade da campanha." },
+  { id: "gads", label: "Google Ads", group: "CRM & Marketing", icon: siGoogleads, color: "#4285F4", ink: "#FFFFFF", phrase: "Pagar para aparecer em primeiro e torcer para a palavra-chave não ser cara demais." },
+  { id: "ga", label: "Google Analytics", group: "CRM & Marketing", icon: siGoogleanalytics, color: "#E37400", ink: "#FFFFFF", phrase: "Onde a gente descobre que o botão mais bonito era o menos clicado." },
+  { id: "github", label: "GitHub", group: "Cloud & Infra", icon: siGithub, color: "#F4F4F5", ink: "#111111", phrase: "Onde o código mora e onde o 'funciona na minha máquina' é posto à prova." },
 ];
 
 // Certificados: o LinkedIn não abre sem login, então só entram os que o Leonardo informar.
@@ -250,6 +251,6 @@ export const CERTS: { title: string; org: string; year: string; url?: string }[]
 // Formação e experiência (fonte: currículo oficial), mostradas na mesma aba enquanto não há certificados.
 export const CREDENTIALS = [
   { kind: "Formação", title: "Bacharelado em Ciência da Computação", org: "UniRitter · Campus FAPA, Porto Alegre", when: "Em andamento" },
-  { kind: "Experiência", title: "Estagiário de TI/CRM · Automação de Processos e IA", org: "V4 Company Mendes & Santos", when: "06/2026 · atual" },
+  { kind: "Experiência", title: "Analista de TI/CRM · Automação de Processos e IA", org: "V4 Company Mendes & Santos", when: "06/2026 · atual" },
   { kind: "Idiomas", title: "Inglês e Espanhol avançados", org: "Português nativo", when: "" },
 ];

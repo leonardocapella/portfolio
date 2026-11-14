@@ -37,7 +37,7 @@ export default function About() {
           </h2>
           <Reveal delay={0.1}>
             <p className="mt-8 max-w-xl leading-relaxed text-white/60">
-              Tenho 19 anos, estudo Ciência da Computação na UniRitter (Campus FAPA, Porto Alegre) e, desde junho de 2026, sou estagiário de TI e CRM na V4 Company Mendes &amp; Santos. Lá eu crio automações de CRM, integro sistemas e coloco IA dentro dos processos comerciais. Meu objetivo é atuar como desenvolvedor fullstack. Falo inglês e espanhol em nível avançado.
+              Tenho 19 anos, estudo Ciência da Computação na UniRitter (Campus FAPA, Porto Alegre) e, desde junho de 2026, trabalho com TI e CRM na V4 Company Mendes &amp; Santos. Lá eu crio automações de CRM, integro sistemas e coloco IA dentro dos processos comerciais. Estou aberto a oportunidades como Analista de Dados / Automações Júnior. Falo inglês e espanhol em nível avançado.
             </p>
           </Reveal>
           <Reveal delay={0.2}>

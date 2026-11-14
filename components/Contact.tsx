@@ -29,7 +29,7 @@ export default function Contact() {
         <Reveal>
           <form onSubmit={submit} className="glass rounded-3xl p-6 md:p-8">
             <h3 className="font-[family-name:var(--font-display)] text-xl font-bold">Fale comigo</h3>
-            <p className="mt-1 text-sm text-white/45">Vaga, projeto ou só uma ideia: me manda uma mensagem.</p>
+            <p className="mt-1 text-sm text-white/45">Aberto a oportunidades como Analista de Dados / Automações Júnior. Vaga, projeto ou ideia: me manda uma mensagem.</p>
             <div className="mt-6 grid gap-3">
               <label className="sr-only" htmlFor="nome">Seu nome</label>
               <input id="nome" name="nome" required maxLength={80} placeholder="Seu nome" className={input} />

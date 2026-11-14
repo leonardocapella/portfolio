@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { CERTS, CREDENTIALS, KEYS, PROFILE, PROJECTS } from "@/lib/data";
+import { CERTS, CREDENTIALS, GROUPS, KEYS, PROFILE, PROJECTS } from "@/lib/data";
 import Reveal, { RevealWords } from "./Reveal";
 import TransitionLink from "./TransitionLink";
 
@@ -81,19 +81,26 @@ export default function Portfolio() {
             </motion.div>
           )}
           {tab === "Tech Stack" && (
-            <motion.ul key="t" className="mx-auto grid max-w-3xl grid-cols-3 gap-4 sm:grid-cols-5" exit={{ opacity: 0 }}>
-              {KEYS.map((k, i) => (
-                <motion.li key={k.id} {...card} transition={{ delay: i * 0.03 }} whileHover={{ y: -6 }}
+            <motion.div key="t" className="mx-auto flex max-w-4xl flex-col gap-10" exit={{ opacity: 0 }}>
+              {GROUPS.map((g, gi) => (
+              <section key={g}>
+              <p className="label mb-4">{g}</p>
+              <ul className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-5">
+              {KEYS.filter((k) => k.group === g).map((k, i) => (
+                <motion.li key={k.id} {...card} transition={{ delay: gi * 0.08 + i * 0.03 }} whileHover={{ y: -6 }}
                   className="glass flex flex-col items-center gap-3 rounded-2xl py-5">
                   <span className="grid h-12 w-12 place-items-center rounded-xl" style={{ background: k.color }}>
                     {k.icon ? (
                       <svg viewBox="0 0 24 24" className="h-6 w-6" fill={k.ink}><path d={k.icon.path} /></svg>
                     ) : <b className="font-[family-name:var(--font-display)] text-sm" style={{ color: k.ink }}>{k.text}</b>}
                   </span>
-                  <span className="text-xs text-white/60">{k.label}</span>
+                  <span className="px-2 text-center text-xs text-white/60">{k.label}</span>
                 </motion.li>
               ))}
-            </motion.ul>
+              </ul>
+              </section>
+              ))}
+            </motion.div>
           )}
         </AnimatePresence>
       </div>

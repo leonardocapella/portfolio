@@ -47,16 +47,16 @@ function LanyardCanvas() {
   const wrap = useRef<HTMLDivElement>(null);
   const [on, setOn] = useState(true);
   useEffect(() => {
-    const io = new IntersectionObserver(([e]) => setOn(e.isIntersecting));
+    const io = new IntersectionObserver(([e]) => setOn(e.isIntersecting), { rootMargin: "100px" });
     io.observe(wrap.current!);
     return () => io.disconnect();
   }, []);
   return (
-    <div ref={wrap} className="h-full w-full">
-    <Canvas frameloop={on ? "always" : "never"} camera={{ position: [0, 0, 13], fov: 25 }} dpr={touch ? [1, 1.5] : [1, 1.75]} gl={{ alpha: true, antialias: !touch, powerPreference: touch ? "low-power" : "default" }} style={{ background: "transparent" }}>
+    <div ref={wrap} className="absolute inset-0 overflow-hidden">
+    <Canvas resize={{ debounce: 0, scroll: false }} frameloop={on ? "always" : "never"} camera={{ position: [0, 0, 13], fov: 25 }} dpr={touch ? [1, 1.5] : [1, 1.75]} gl={{ alpha: true, antialias: !touch, powerPreference: touch ? "low-power" : "default" }} style={{ background: "transparent" }}>
       <ambientLight intensity={0.5} />
       <Physics gravity={[0, -40, 0]} timeStep={1 / 60} interpolate>
-        <Band />
+        <Band active={on} />
       </Physics>
       <Environment resolution={touch ? 64 : 256} environmentIntensity={0.9}>
         <Lightformer intensity={2} color="white" position={[0, -1, 5]} rotation={[0, 0, Math.PI / 3]} scale={[100, 0.1, 1]} />
@@ -72,7 +72,7 @@ function LanyardCanvas() {
 type Body = RapierRigidBody & { lerped?: THREE.Vector3 };
 const ANCHOR = new THREE.Vector3(0, 5.2, 0);
 
-function Band({ maxSpeed = 50, minSpeed = 10 }) {
+function Band({ maxSpeed = 50, minSpeed = 10, active = true }: { maxSpeed?: number; minSpeed?: number; active?: boolean }) {
   const band = useRef<THREE.Mesh<MeshLineGeometry>>(null!);
   const fixed = useRef<Body>(null!), j1 = useRef<Body>(null!), j2 = useRef<Body>(null!), j3 = useRef<Body>(null!), card = useRef<Body>(null!);
   const { size } = useThree();
@@ -96,18 +96,37 @@ function Band({ maxSpeed = 50, minSpeed = 10 }) {
   useRopeJoint(j2, j3, [[0, 0, 0], [0, 0, 0], 1]);
   useSphericalJoint(j3, card, [[0, 0, 0], [0, 1.3, 0]]); // topo da argola
 
-  useFrame((state, delta) => {
-    const { vec, dir, ang, rot } = tmp;
-    if (!fixed.current) return;
-    // se a simulação divergir (aba em segundo plano, passo grande), recoloca o cordão no lugar
-    const c = card.current.translation();
-    if (!Number.isFinite(c.x + c.y + c.z) || Math.abs(c.y) > 30 || Math.abs(c.x) > 30) {
-      [j1, j2, j3, card].forEach((r, i) => {
-        r.current.setTranslation({ x: ANCHOR.x + 0.5 * (i + 1), y: ANCHOR.y, z: 0 }, true);
+  // recoloca o cordão em repouso, de frente para a câmera
+  const resetPose = useRef(() => {});
+  resetPose.current = () => {
+    if (!card.current) return;
+    anchorX.current = 0;
+    fixed.current.setTranslation({ x: ANCHOR.x, y: ANCHOR.y, z: 0 }, true);
+    [j1, j2, j3, card].forEach((r, i) => {
+        r.current.setTranslation({ x: ANCHOR.x, y: [4.2, 3.2, 2.2, 0.9][i], z: 0 }, true);
+        r.current.setRotation({ x: 0, y: 0, z: 0, w: 1 }, true);
         r.current.setLinvel({ x: 0, y: 0, z: 0 }, true);
         r.current.setAngvel({ x: 0, y: 0, z: 0 }, true);
         r.current.lerped = undefined;
       });
+  };
+  // ao voltar para a tela, trocar de aba ou redimensionar: estado limpo em vez de um salto acumulado
+  useEffect(() => { if (active) resetPose.current(); }, [active]);
+  useEffect(() => {
+    const r = () => resetPose.current();
+    const v = () => { if (document.visibilityState === "visible") resetPose.current(); };
+    addEventListener("resize", r);
+    document.addEventListener("visibilitychange", v);
+    return () => { removeEventListener("resize", r); document.removeEventListener("visibilitychange", v); };
+  }, []);
+
+  useFrame((state, delta) => {
+    const { vec, dir, ang, rot } = tmp;
+    if (!fixed.current) return;
+    // se a simulação divergir ou o crachá sair da área visível, recoloca no lugar
+    const c = card.current.translation();
+    if (!dragged && (!Number.isFinite(c.x + c.y + c.z) || Math.abs(c.x - anchorX.current) > 3.5 || c.y > 6 || c.y < -4)) {
+      resetPose.current();
       return;
     }
     // fixação segue o mouse de leve: o crachá balança atrás
@@ -136,17 +155,17 @@ function Band({ maxSpeed = 50, minSpeed = 10 }) {
     if (pts.every((v) => Number.isFinite(v.x + v.y + v.z))) band.current.geometry.setPoints(pts);
     ang.copy(card.current.angvel());
     rot.copy(card.current.rotation());
-    card.current.setAngvel({ x: ang.x, y: ang.y - rot.y * 0.25, z: ang.z }, true);
+    card.current.setAngvel({ x: ang.x - rot.x * 0.25, y: 0, z: ang.z }, true);
   });
 
   return (
     <>
       <group position={[0, 0, 0]}>{/* cordão: 3 elos de 1u + crachá; ponto fixo acima do topo */}
         <RigidBody ref={fixed} {...seg} type="kinematicPosition" position={ANCHOR.toArray()} />
-        <RigidBody ref={j1} {...seg} position={[0.5, 5.2, 0]}><BallCollider args={[0.1]} /></RigidBody>
-        <RigidBody ref={j2} {...seg} position={[1, 5.2, 0]}><BallCollider args={[0.1]} /></RigidBody>
-        <RigidBody ref={j3} {...seg} position={[1.5, 5.2, 0]}><BallCollider args={[0.1]} /></RigidBody>
-        <RigidBody ref={card} {...seg} position={[2, 5.2, 0]} type={dragged ? "kinematicPosition" : "dynamic"}>
+        <RigidBody ref={j1} {...seg} position={[0, 4.2, 0]}><BallCollider args={[0.1]} /></RigidBody>
+        <RigidBody ref={j2} {...seg} position={[0, 3.2, 0]}><BallCollider args={[0.1]} /></RigidBody>
+        <RigidBody ref={j3} {...seg} position={[0, 2.2, 0]}><BallCollider args={[0.1]} /></RigidBody>
+        <RigidBody ref={card} {...seg} position={[0, 0.9, 0]} type={dragged ? "kinematicPosition" : "dynamic"} enabledRotations={[true, false, true]}>
           <CuboidCollider args={[0.8, 1.125, 0.01]} />
           <group position={[0, 0, -0.05]}
             onPointerOver={() => (document.body.style.cursor = "grab")}
@@ -232,7 +251,8 @@ function useBadgeTextures() {
     strap.wrapS = strap.wrapT = THREE.RepeatWrapping;
     // foto 3x4 (quadrada, fundo branco) recortada no centro para a moldura 432×340
     const img = new Image();
-    img.onload = () => {
+    img.decoding = "async";
+    const draw = () => {
       const c = (front.image as HTMLCanvasElement).getContext("2d")!;
       const fw = W - 80, fh = 340, r = fw / fh;
       const sh = img.height * 0.82, sw = sh * r; // corta um pouco do topo/peito para enquadrar o rosto
@@ -241,7 +261,11 @@ function useBadgeTextures() {
       c.restore();
       front.needsUpdate = true;
     };
+    let tries = 0;
+    img.onload = draw;
+    img.onerror = () => { if (++tries < 3) setTimeout(() => (img.src = asset(PROFILE.badgePhoto) + "?r=" + tries), 800 * tries); };
     img.src = asset(PROFILE.badgePhoto);
+    if (img.complete && img.naturalWidth) draw();
     return { front, back, strap };
   }, []);
 }

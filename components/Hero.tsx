@@ -21,10 +21,10 @@ export default function Hero() {
 
   return (
     <section id="inicio" className="relative mx-auto grid min-h-svh max-w-6xl items-center gap-6 px-5 pt-28 md:grid-cols-[1.15fr_.85fr] md:px-8">
-      <div className="relative z-10">
+      <div className="relative z-10 min-w-0">
         <motion.p {...up(0.1)} className="label flex items-center gap-2 !text-white/70">
           <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" /><span className="relative h-2 w-2 rounded-full bg-emerald-400" /></span>
-          Disponível para trabalho
+          Aberto a oportunidades júnior
         </motion.p>
         <motion.h1 {...up(0.2)} className="title-xl mt-6 text-[clamp(34px,6vw,80px)]">
           Analista de<br />Dados <span className="text-white/35">&amp;</span><br /><span className="text-white/35">Automações</span>
@@ -33,7 +33,7 @@ export default function Hero() {
           <span className="caret">{txt}</span>
         </motion.p>
         <motion.p {...up(0.4)} className="mt-5 max-w-md text-[15px] leading-relaxed text-white/55">
-          Sou o Leonardo, estudante de Ciência da Computação na UniRitter e estagiário de TI/CRM, automação e IA, na V4 Company. Pego planilha, PDF e retrabalho e transformo em sistema que roda sozinho.
+          Sou o Leonardo, estudante de Ciência da Computação na UniRitter e trabalho com TI/CRM, automação e IA na V4 Company. Pego planilha, PDF e retrabalho e transformo em sistema que roda sozinho.
         </motion.p>
         <motion.ul {...up(0.5)} className="mt-6 flex flex-wrap gap-2">
           {["Python", "SQL", "Supabase", "JavaScript"].map((t) => (
@@ -42,10 +42,10 @@ export default function Hero() {
         </motion.ul>
         <motion.div {...up(0.6)} className="mt-8 font-mono text-xs leading-6 text-white/40">
           <p>→ Porto Alegre, RS</p>
-          <p>→ aberto a vagas júnior/trainee</p>
+          <p>→ Analista de Dados / Automações Júnior</p>
         </motion.div>
       </div>
-      <div className="relative h-[520px] md:h-svh md:self-start" data-hot>
+      <div className="relative h-[520px] min-w-0 md:h-svh md:self-start" data-hot>
         <Lanyard />
       </div>
       <motion.a href="#sobre" {...up(1)} className="label absolute bottom-6 left-1/2 -translate-x-1/2">role ↓</motion.a>

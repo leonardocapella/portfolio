@@ -27,9 +27,9 @@ const body = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Leonardo Capella · Automação, Dados & IA",
+  title: "Leonardo Capella · Analista de Dados & Automações",
   description:
-    "Portfólio de Leonardo Capella: estudante de Ciência da Computação (UniRitter) e estagiário de TI/CRM com foco em automação de processos e IA. Porto Alegre, RS.",
+    "Portfólio de Leonardo Capella, Analista de Dados & Automações em Porto Alegre, RS. Automação de processos, integrações, CRM e IA aplicada. Aberto a oportunidades como Analista de Dados / Automações Júnior.",
 };
 export const viewport: Viewport = { themeColor: "#070707" };
 

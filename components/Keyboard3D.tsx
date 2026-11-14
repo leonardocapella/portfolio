@@ -17,16 +17,16 @@ const SMOOTH = typeof window !== "undefined" && isTouch() ? 2 : 4; // menos vér
 // Estados do teclado por seção. x em "meia largura de tela" (−1..1), resto em unidades da cena.
 type Pose = { x: number; y: number; z: number; rx: number; ry: number; rz: number; s: number };
 const POSES: Record<"hidden" | "skills" | "portfolio" | "contato", Pose> = {
-  hidden: { x: 0.35, y: -9, z: 0, rx: 1.1, ry: 0, rz: 0.9, s: 0.7 },
-  skills: { x: 0.45, y: -0.2, z: 0, rx: 0.95, ry: 0, rz: 0.55, s: 0.82 },
-  portfolio: { x: 0.15, y: -1.6, z: -8, rx: 1.25, ry: 0, rz: -0.35, s: 1 },
-  contato: { x: 0.62, y: 1.4, z: -3, rx: 0.8, ry: 0.25, rz: -0.6, s: 0.75 },
+  hidden: { x: 0.45, y: -9, z: 0, rx: 0, ry: 0, rz: 0, s: 0.82 },
+  skills: { x: 0.45, y: 0, z: 0, rx: 0, ry: 0, rz: 0, s: 0.82 },
+  portfolio: { x: 0.45, y: -9, z: 0, rx: 0, ry: 0, rz: 0, s: 0.82 },
+  contato: { x: 0.45, y: -9, z: 0, rx: 0, ry: 0, rz: 0, s: 0.82 },
 };
 const MOBILE: typeof POSES = {
-  hidden: { ...POSES.hidden, x: 0 },
-  skills: { x: 0, y: -2.7, z: 0, rx: 0.95, ry: 0, rz: 0.55, s: 0.48 },
-  portfolio: { x: 0, y: -1, z: -10, rx: 1.2, ry: 0, rz: -0.35, s: 1 },
-  contato: { x: 0, y: 5.5, z: -9, rx: 0.8, ry: 0.25, rz: -0.6, s: 0.55 },
+  hidden: { x: 0, y: -9, z: 0, rx: 0, ry: 0, rz: 0, s: 0.52 },
+  skills: { x: 0, y: -2.0, z: 0, rx: 0, ry: 0, rz: 0, s: 0.52 },
+  portfolio: { x: 0, y: -9, z: 0, rx: 0, ry: 0, rz: 0, s: 0.52 },
+  contato: { x: 0, y: -9, z: 0, rx: 0, ry: 0, rz: 0, s: 0.52 },
 };
 
 export default function Keyboard3D() {
@@ -79,10 +79,7 @@ function Board() {
       gsap.fromTo(p, { ...from }, { ...to, ease: "power1.inOut", immediateRender: false, scrollTrigger: { trigger, start, end, scrub: 1 } });
     const t = [
       tw(P.hidden, P.skills, "#skills", "top bottom", "top 15%"),
-      tw(P.skills, P.portfolio, "#portfolio", "top 85%", "top 10%"),
-      tw(P.portfolio, P.contato, "#contato", "top bottom", "top 20%"),
-      // no celular o contato é longo: o teclado sobe e sai antes do formulário e dos cards
-      ...(P === MOBILE ? [tw(P.contato, { ...P.contato, y: 16 }, "#contato", "top 20%", "top -30%")] : []),
+      tw(P.skills, P.portfolio, "#portfolio", "top 85%", "top 15%"),
     ];
     const st = ScrollTrigger.create({ trigger: "#skills", start: "top 40%", end: "bottom 40%", onToggle: (s) => (interactive.current = s.isActive) });
     ScrollTrigger.refresh();
@@ -113,7 +110,7 @@ function Board() {
           <Key key={t.id} tech={t} interactive={interactive}
             position={[(i % COLS - (COLS - 1) / 2) * STEP, H / 2, (Math.floor(i / COLS) - (rows - 1) / 2) * STEP]} />
         ))}
-        <Key tech={{ id: "lc", label: "Leonardo Capella", text: "LC", color: "#EDEDED", ink: "#111", phrase: "" }} interactive={interactive}
+        <Key tech={{ id: "lc", label: "Leonardo Capella", group: "Linguagens", text: "LC", color: "#EDEDED", ink: "#111", phrase: "" }} interactive={interactive}
           position={[((KEYS.length % COLS) - (COLS - 1) / 2) * STEP, H / 2, (rows - 1 - (rows - 1) / 2) * STEP]} />
       </group>
     </group>
@@ -164,7 +161,12 @@ function keyTexture(t: Tech) {
     } else {
       c.textAlign = "center"; c.textBaseline = "middle";
       c.font = `900 ${t.text!.length > 4 ? 52 : t.text!.length > 2 ? 78 : 96}px ${fontVar("--font-display")}`;
-      c.fillText(t.text!, 128, 134);
+      c.fillText(t.text!, 128, t.id === "aws" ? 112 : 134);
+      if (t.id === "aws") { // sorriso laranja da marca
+        c.strokeStyle = "#FF9900"; c.lineWidth = 11; c.lineCap = "round";
+        c.beginPath(); c.moveTo(72, 160); c.quadraticCurveTo(128, 196, 184, 160); c.stroke();
+        c.beginPath(); c.moveTo(166, 152); c.lineTo(190, 158); c.lineTo(182, 180); c.stroke();
+      }
     }
   });
 }

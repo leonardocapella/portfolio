@@ -49,7 +49,7 @@ async function Projeto({ params }: { params: Promise<{ slug: string }> }) {
           <div className="flex flex-col gap-4">
             <Reveal delay={0.1}>
               <ProjectDemo p={p} />
-              <p className="mt-2 font-mono text-[10px] text-white/30">{p.image ? "print real do site" : "demo ilustrativa · dados fictícios"}</p>
+              <p className="mt-2 font-mono text-[10px] text-white/30">{p.imageCaption ?? (p.image ? "print real do site" : "demo ilustrativa · dados fictícios")}</p>
             </Reveal>
             <Reveal delay={0.15} className="glass rounded-2xl p-5">
               <p className="label">Destaques</p>

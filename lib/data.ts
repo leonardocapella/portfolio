@@ -31,6 +31,7 @@ export type Project = {
   result: string;
   url?: string; // site público
   image?: string; // print real (substitui a demo ilustrativa)
+  imageCaption?: string;
 };
 
 export const PROJECTS: Project[] = [
@@ -215,6 +216,7 @@ export const PROJECTS: Project[] = [
     result: "Landing publicada que apresenta a proposta e os planos.",
     url: "https://leonardocapella.github.io/site-ai-studio/",
     image: "/assets/projetos/aivio.jpg",
+    imageCaption: "prévia ilustrativa",
   },
 ];
 

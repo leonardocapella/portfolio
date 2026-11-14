@@ -20,7 +20,7 @@ function useTicker(ms: number, n: number) {
 export function Window({ title, children, color, href }: { title: string; children: ReactNode; color: string; href?: string }) {
   return (
     <div className="glass group overflow-hidden rounded-2xl shadow-[0_40px_120px_-40px_rgba(0,0,0,.9)]">
-      <div className="flex items-center gap-1.5 border-b border-white/[.07] px-4 py-3">
+      <div className="flex min-w-0 items-center gap-1.5 border-b border-white/[.07] px-4 py-3">
         <i className="h-2.5 w-2.5 shrink-0 rounded-full bg-white/15" /><i className="h-2.5 w-2.5 shrink-0 rounded-full bg-white/15" /><i className="h-2.5 w-2.5 shrink-0 rounded-full bg-white/15" />
         <span className="ml-3 min-w-0 truncate font-mono text-[11px] text-white/40">{title}</span>
         {href ? (

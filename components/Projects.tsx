@@ -25,7 +25,7 @@ export default function Projects() {
         {PROJECTS.map((p, i) => {
           const flip = i % 2 === 1;
           return (
-            <li key={p.slug} className="grid items-center gap-10 md:grid-cols-2 md:gap-16">
+            <li key={p.slug} className="grid grid-cols-1 items-center gap-10 md:grid-cols-2 md:gap-16 [&>*]:min-w-0">
               <motion.div className={flip ? "md:order-2" : ""}
                 initial={{ opacity: 0, y: 60, rotate: flip ? 2 : -2, scale: 0.96 }}
                 whileInView={{ opacity: 1, y: 0, rotate: 0, scale: 1 }}

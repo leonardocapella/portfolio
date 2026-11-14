@@ -11,7 +11,7 @@ export const PROFILE = {
   cv: "/assets/curriculo-leonardo-capella.pdf",
   photo: "/assets/foto-leonardo-fundo-preto.jpg", // seção Sobre
   badgePhoto: "/assets/foto-leonardo-fundo-branco.jpg", // crachá do hero
-  linkedin: "#", // [PLACEHOLDER] URL do LinkedIn
+  linkedin: "https://www.linkedin.com/in/leonardo-capella-24223a392",
   github: "#", // [PLACEHOLDER] URL do GitHub
   instagram: "#", // [PLACEHOLDER] URL do Instagram
 };
@@ -243,8 +243,13 @@ export const KEYS: Tech[] = [
   { id: "github", label: "GitHub", icon: siGithub, color: "#F4F4F5", ink: "#111111", phrase: "Onde o código mora e onde o 'funciona na minha máquina' é posto à prova." },
 ];
 
-export const CERTS = [
-  { title: "[PLACEHOLDER] Certificado 1", org: "Instituição", year: "—" },
-  { title: "[PLACEHOLDER] Certificado 2", org: "Instituição", year: "—" },
-  { title: "[PLACEHOLDER] Certificado 3", org: "Instituição", year: "—" },
+// Certificados: o LinkedIn não abre sem login, então só entram os que o Leonardo informar.
+// Formato: { title: "Nome do curso", org: "Instituição", year: "2026", url?: "link de verificação" }
+export const CERTS: { title: string; org: string; year: string; url?: string }[] = [];
+
+// Formação e experiência (fonte: currículo oficial), mostradas na mesma aba enquanto não há certificados.
+export const CREDENTIALS = [
+  { kind: "Formação", title: "Bacharelado em Ciência da Computação", org: "UniRitter · Campus FAPA, Porto Alegre", when: "Em andamento" },
+  { kind: "Experiência", title: "Estagiário de TI/CRM · Automação de Processos e IA", org: "V4 Company Mendes & Santos", when: "06/2026 · atual" },
+  { kind: "Idiomas", title: "Inglês e Espanhol avançados", org: "Português nativo", when: "" },
 ];

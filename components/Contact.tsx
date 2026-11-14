@@ -46,13 +46,13 @@ export default function Contact() {
         <Reveal delay={0.1} className="flex flex-col gap-4">
           <div className="glass rounded-3xl p-6 md:p-8">
             <p className="label">Contato direto</p>
-            <a href={`mailto:${PROFILE.email}`} className="mt-3 block break-all text-lg hover:underline">{PROFILE.email}</a>
+            <a href={`mailto:${PROFILE.email}`} className="mt-3 block text-[clamp(14px,4.2vw,18px)] [overflow-wrap:anywhere] hover:underline">{PROFILE.email.replace("@", "\u200B@")}</a>
             <p className="mt-2 text-sm text-white/45">{PROFILE.city} · responde em português, inglês ou espanhol</p>
           </div>
           <ul className="grid grid-cols-2 gap-3">
             {socials.map(([n, h]) => (
               <li key={n}>
-                <a href={h} className="glass flex items-center justify-between rounded-2xl px-5 py-4 text-sm transition-colors hover:border-white/25">
+                <a href={h} {...(h.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})} className="glass flex items-center justify-between rounded-2xl px-5 py-4 text-sm transition-colors hover:border-white/25">
                   <span>{n}{h === "#" && <span className="block font-mono text-[10px] text-white/30">[PLACEHOLDER]</span>}</span>
                   <span className="text-white/40">↗</span>
                 </a>
@@ -62,7 +62,8 @@ export default function Contact() {
         </Reveal>
       </div>
       <footer className="mt-24 flex justify-between border-t border-white/[.07] pt-6 font-mono text-xs text-white/35">
-        <span>© 2026 Leonardo Capella</span><span>feito com Next.js, three.js e GSAP</span>
+        <span>© 2026 Leonardo Capella</span>
+        <span className="flex gap-4"><a href={PROFILE.linkedin} target="_blank" rel="noopener noreferrer" className="hover:text-white">LinkedIn ↗</a><span className="hidden sm:inline">feito com Next.js, three.js e GSAP</span></span>
       </footer>
     </section>
   );

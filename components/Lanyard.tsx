@@ -7,6 +7,8 @@ import { Environment, Lightformer } from "@react-three/drei";
 import { MeshLineGeometry, MeshLineMaterial } from "meshline";
 import { canvasTexture, fontVar, roundRect } from "@/lib/canvasTex";
 import { PROFILE } from "@/lib/data";
+import { isTouch } from "@/lib/gfx";
+import GLBoundary from "./GLBoundary";
 import { asset } from "@/lib/base";
 
 extend({ MeshLineGeometry, MeshLineMaterial });
@@ -20,6 +22,27 @@ declare module "@react-three/fiber" {
 // Crachá 3D num cordão com física (rapier), no espírito do lanyard da Vercel.
 // O ponto de fixação acompanha o mouse de leve; o crachá pode ser arrastado.
 export default function Lanyard() {
+  return <GLBoundary fallback={<BadgeFallback />}><LanyardCanvas /></GLBoundary>;
+}
+
+// Sem WebGL: o mesmo crachá em HTML, pendurado num cordão estático.
+function BadgeFallback() {
+  return (
+    <div className="flex h-full flex-col items-center pt-6">
+      <div className="h-24 w-3 rounded-sm bg-zinc-600" />
+      <div className="w-56 rotate-[-3deg] rounded-xl border border-white/10 bg-zinc-800 p-4 shadow-2xl">
+        <p className="font-mono text-[10px] text-white/50">leonardo.dev</p>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={asset(PROFILE.badgePhoto)} alt="Leonardo Capella" className="mt-2 aspect-[432/340] w-full rounded-lg object-cover object-[50%_20%]" />
+        <p className="mt-3 font-[family-name:var(--font-display)] text-lg font-black leading-tight">LEONARDO<br />CAPELLA</p>
+        <p className="mt-1 text-[11px] text-white/60">Dados &amp; Automações</p>
+      </div>
+    </div>
+  );
+}
+
+function LanyardCanvas() {
+  const touch = useMemo(isTouch, []);
   // fora da tela o canvas para (economiza GPU e evita a física acumular passo grande ao voltar)
   const wrap = useRef<HTMLDivElement>(null);
   const [on, setOn] = useState(true);
@@ -30,12 +53,12 @@ export default function Lanyard() {
   }, []);
   return (
     <div ref={wrap} className="h-full w-full">
-    <Canvas frameloop={on ? "always" : "never"} camera={{ position: [0, 0, 13], fov: 25 }} dpr={[1, 1.75]} gl={{ alpha: true, antialias: true }} style={{ background: "transparent" }}>
+    <Canvas frameloop={on ? "always" : "never"} camera={{ position: [0, 0, 13], fov: 25 }} dpr={touch ? [1, 1.5] : [1, 1.75]} gl={{ alpha: true, antialias: !touch, powerPreference: touch ? "low-power" : "default" }} style={{ background: "transparent" }}>
       <ambientLight intensity={0.5} />
       <Physics gravity={[0, -40, 0]} timeStep={1 / 60} interpolate>
         <Band />
       </Physics>
-      <Environment resolution={256} environmentIntensity={0.9}>
+      <Environment resolution={touch ? 64 : 256} environmentIntensity={0.9}>
         <Lightformer intensity={2} color="white" position={[0, -1, 5]} rotation={[0, 0, Math.PI / 3]} scale={[100, 0.1, 1]} />
         <Lightformer intensity={3} color="white" position={[-1, -1, 1]} rotation={[0, 0, Math.PI / 3]} scale={[100, 0.1, 1]} />
         <Lightformer intensity={3} color="white" position={[1, 1, 1]} rotation={[0, 0, Math.PI / 3]} scale={[100, 0.1, 1]} />
@@ -129,7 +152,16 @@ function Band({ maxSpeed = 50, minSpeed = 10 }) {
             onPointerOver={() => (document.body.style.cursor = "grab")}
             onPointerOut={() => (document.body.style.cursor = "")}
             onPointerUp={(e) => { (e.target as Element).releasePointerCapture(e.pointerId); drag(false); }}
-            onPointerDown={(e) => { (e.target as Element).setPointerCapture(e.pointerId); drag(new THREE.Vector3().copy(e.point).sub(tmp.vec.copy(card.current.translation()))); }}>
+            onPointerDown={(e) => {
+              // no toque, arrastar brigaria com a rolagem da página: um toque empurra o crachá
+              if (e.pointerType === "touch") {
+                const side = Math.sign(e.point.x - card.current.translation().x) || 1;
+                card.current.applyImpulse({ x: -side * 0.9, y: 0.15, z: 0.5 }, true);
+                return;
+              }
+              (e.target as Element).setPointerCapture(e.pointerId);
+              drag(new THREE.Vector3().copy(e.point).sub(tmp.vec.copy(card.current.translation())));
+            }}>
             <mesh>
               <boxGeometry args={[1.6, 2.25, 0.03]} />
               <meshPhysicalMaterial attach="material-0" color="#1a1a1a" />

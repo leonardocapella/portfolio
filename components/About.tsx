@@ -5,7 +5,7 @@ import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useEffect, useRef } from "react";
 import Reveal, { RevealWords } from "./Reveal";
 import TransitionLink from "./TransitionLink";
-import { CERTS, PROFILE, PROJECTS } from "@/lib/data";
+import { PROFILE, PROJECTS } from "@/lib/data";
 
 function Count({ to }: { to: number }) {
   const ref = useRef<HTMLSpanElement>(null);
@@ -22,7 +22,7 @@ function Count({ to }: { to: number }) {
 
 const STATS = [
   { icon: "</>", n: PROJECTS.length, label: "Projetos", href: "/#portfolio" },
-  { icon: "◎", n: 0, label: "Certificados", note: "[PLACEHOLDER]", href: "/#portfolio" },
+  { icon: "◎", n: 2, label: "Idiomas além do português", href: "/#portfolio" },
   { icon: "⌘", n: 413, label: "Checks automáticos antes de cada SQL", href: "/projetos/hub-v4" },
 ];
 
@@ -67,10 +67,9 @@ export default function About() {
               <div>
                 <span className="grid h-10 w-10 place-items-center rounded-full border border-white/10 font-mono text-sm">{s.icon}</span>
                 <p className="label mt-6">{s.label}</p>
-                {s.note && <p className="mt-1 font-mono text-[10px] text-white/30">{s.note}</p>}
               </div>
               <div className="text-right">
-                <p className="title-xl text-4xl">{s.n ? <Count to={s.n} /> : CERTS.length ? "—" : 0}</p>
+                <p className="title-xl text-4xl"><Count to={s.n} /></p>
                 <span className="mt-2 inline-block text-white/40 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1">↗</span>
               </div>
             </TransitionLink>

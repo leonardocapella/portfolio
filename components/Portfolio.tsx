@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { CERTS, KEYS, PROJECTS } from "@/lib/data";
+import { CERTS, CREDENTIALS, KEYS, PROFILE, PROJECTS } from "@/lib/data";
 import Reveal, { RevealWords } from "./Reveal";
 import TransitionLink from "./TransitionLink";
 
@@ -56,15 +56,29 @@ export default function Portfolio() {
             </motion.ul>
           )}
           {tab === "Certificados" && (
-            <motion.ul key="c" className="grid gap-5 sm:grid-cols-3" exit={{ opacity: 0 }}>
-              {CERTS.map((c, i) => (
-                <motion.li key={c.title} {...card} transition={{ delay: i * 0.08 }} className="glass rounded-2xl p-3">
-                  <div className="ph aspect-[4/3] rounded-xl">[ PLACEHOLDER ]<br />imagem do certificado</div>
-                  <p className="mt-3 px-1 text-sm">{c.title}</p>
-                  <p className="px-1 pb-1 font-mono text-[11px] text-white/40">{c.org} · {c.year}</p>
-                </motion.li>
-              ))}
-            </motion.ul>
+            <motion.div key="c" exit={{ opacity: 0 }}>
+              <ul className="grid gap-5 sm:grid-cols-3">
+                {CERTS.map((c, i) => (
+                  <motion.li key={c.title} {...card} transition={{ delay: i * 0.08 }} className="glass rounded-2xl p-5">
+                    <p className="label !text-[10px]">Certificado · {c.year}</p>
+                    <p className="mt-3 text-sm">{c.title}</p>
+                    <p className="mt-1 font-mono text-[11px] text-white/40">{c.org}</p>
+                    {c.url && <a href={c.url} target="_blank" rel="noopener noreferrer" className="mt-4 inline-block text-xs text-white/60 hover:text-white">Verificar ↗</a>}
+                  </motion.li>
+                ))}
+                {CREDENTIALS.map((c, i) => (
+                  <motion.li key={c.title} {...card} transition={{ delay: (CERTS.length + i) * 0.08 }} className="glass flex flex-col rounded-2xl p-5">
+                    <p className="label !text-[10px]">{c.kind}{c.when && ` · ${c.when}`}</p>
+                    <p className="mt-3 font-[family-name:var(--font-display)] text-base font-bold leading-snug">{c.title}</p>
+                    <p className="mt-2 text-sm text-white/50">{c.org}</p>
+                  </motion.li>
+                ))}
+              </ul>
+              <motion.a {...card} transition={{ delay: 0.3 }} href={PROFILE.linkedin} target="_blank" rel="noopener noreferrer"
+                className="glass mx-auto mt-6 flex max-w-md items-center justify-between rounded-2xl px-5 py-4 text-sm hover:border-white/25">
+                <span>Certificados e trajetória completa no LinkedIn</span><span className="text-white/50">↗</span>
+              </motion.a>
+            </motion.div>
           )}
           {tab === "Tech Stack" && (
             <motion.ul key="t" className="mx-auto grid max-w-3xl grid-cols-3 gap-4 sm:grid-cols-5" exit={{ opacity: 0 }}>

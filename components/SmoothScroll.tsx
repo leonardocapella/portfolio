@@ -14,6 +14,7 @@ export default function SmoothScroll() {
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
+    ScrollTrigger.config({ ignoreMobileResize: true });
     const lenis = new Lenis({ lerp: 0.1, anchors: { offset: -20 } });
     window.__lenis = lenis;
     lenis.on("scroll", ScrollTrigger.update);

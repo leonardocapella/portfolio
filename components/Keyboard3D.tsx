@@ -46,8 +46,8 @@ function KeyboardCanvas() {
   }, []);
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 z-0">
-      <Canvas frameloop={on ? "always" : "never"} camera={{ position: [0, 0, 14], fov: 32 }} dpr={touch ? 1 : [1, 1.5]} eventSource={typeof document !== "undefined" ? document.body : undefined} eventPrefix="client"
-        gl={{ alpha: true, antialias: !touch, powerPreference: touch ? "low-power" : "default" }} style={{ background: "transparent" }}>
+      <Canvas frameloop={on ? "always" : "never"} camera={{ position: [0, 0, 14], fov: 32 }} dpr={[1, Math.min(typeof window !== "undefined" ? window.devicePixelRatio : 2, 2)]} eventSource={typeof document !== "undefined" ? document.body : undefined} eventPrefix="client"
+        gl={{ alpha: true, antialias: true, powerPreference: touch ? "low-power" : "default" }} style={{ background: "transparent" }}>
         <ambientLight intensity={0.6} />
         <directionalLight position={[4, 8, 6]} intensity={2.2} />
         <directionalLight position={[-6, -2, 4]} intensity={0.6} color="#9ab" />
@@ -152,20 +152,21 @@ function Key({ tech, position, interactive }: { tech: Tech; position: [number, n
 }
 
 function keyTexture(t: Tech) {
-  return canvasTexture(256, 256, (c) => {
-    c.fillStyle = t.color; c.fillRect(0, 0, 256, 256);
+  const S = 1024;
+  return canvasTexture(S, S, (c) => {
+    c.fillStyle = t.color; c.fillRect(0, 0, S, S);
     c.fillStyle = t.ink;
     if (t.icon) {
-      c.save(); c.translate(68, 68); c.scale(120 / 24, 120 / 24);
+      c.save(); c.translate(S * 68 / 256, S * 68 / 256); c.scale((S * 120 / 256) / 24, (S * 120 / 256) / 24);
       c.fill(new Path2D(t.icon.path)); c.restore();
     } else {
       c.textAlign = "center"; c.textBaseline = "middle";
-      c.font = `900 ${t.text!.length > 4 ? 52 : t.text!.length > 2 ? 78 : 96}px ${fontVar("--font-display")}`;
-      c.fillText(t.text!, 128, t.id === "aws" ? 112 : 134);
+      c.font = `900 ${(t.text!.length > 4 ? 52 : t.text!.length > 2 ? 78 : 96) * S / 256}px ${fontVar("--font-display")}`;
+      c.fillText(t.text!, S / 2, t.id === "aws" ? S * 112 / 256 : S * 134 / 256);
       if (t.id === "aws") { // sorriso laranja da marca
-        c.strokeStyle = "#FF9900"; c.lineWidth = 11; c.lineCap = "round";
-        c.beginPath(); c.moveTo(72, 160); c.quadraticCurveTo(128, 196, 184, 160); c.stroke();
-        c.beginPath(); c.moveTo(166, 152); c.lineTo(190, 158); c.lineTo(182, 180); c.stroke();
+        c.strokeStyle = "#FF9900"; c.lineWidth = 11 * S / 256; c.lineCap = "round";
+        c.beginPath(); c.moveTo(S * 72 / 256, S * 160 / 256); c.quadraticCurveTo(S / 2, S * 196 / 256, S * 184 / 256, S * 160 / 256); c.stroke();
+        c.beginPath(); c.moveTo(S * 166 / 256, S * 152 / 256); c.lineTo(S * 190 / 256, S * 158 / 256); c.lineTo(S * 182 / 256, S * 180 / 256); c.stroke();
       }
     }
   });

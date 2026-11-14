@@ -53,7 +53,7 @@ function LanyardCanvas() {
   }, []);
   return (
     <div ref={wrap} className="absolute inset-0 overflow-hidden">
-    <Canvas resize={{ debounce: 0, scroll: false }} frameloop={on ? "always" : "never"} camera={{ position: [0, 0, 13], fov: 25 }} dpr={touch ? [1, 1.5] : [1, 1.75]} gl={{ alpha: true, antialias: !touch, powerPreference: touch ? "low-power" : "default" }} style={{ background: "transparent" }}>
+    <Canvas resize={{ debounce: 0, scroll: false }} frameloop={on ? "always" : "never"} camera={{ position: [0, 0, 13], fov: 25 }} dpr={[1, Math.min(typeof window !== "undefined" ? window.devicePixelRatio : 2, 2)]} gl={{ alpha: true, antialias: true, powerPreference: touch ? "low-power" : "default" }} style={{ background: "transparent" }}>
       <ambientLight intensity={0.5} />
       <Physics gravity={[0, -40, 0]} timeStep={1 / 60} interpolate>
         <Band active={on} />
@@ -213,40 +213,40 @@ function Band({ maxSpeed = 50, minSpeed = 10, active = true }: { maxSpeed?: numb
 function useBadgeTextures() {
   return useMemo(() => {
     const disp = fontVar("--font-display"), body = fontVar("--font-body");
-    const W = 512, H = 720;
+    const W = 2048, H = 2880, k = 4; // 4x sobre o layout original 512×720
     const front = canvasTexture(W, H, (c) => {
       const g = c.createLinearGradient(0, 0, W, H);
       g.addColorStop(0, "#1b1b1d"); g.addColorStop(1, "#0b0b0c");
       c.fillStyle = g; c.fillRect(0, 0, W, H);
-      c.strokeStyle = "rgba(255,255,255,.08)"; c.lineWidth = 1;
-      for (let x = 0; x < W; x += 32) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, H); c.stroke(); }
-      for (let y = 0; y < H; y += 32) { c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
+      c.strokeStyle = "rgba(255,255,255,.08)"; c.lineWidth = k;
+      for (let x = 0; x < W; x += 32 * k) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, H); c.stroke(); }
+      for (let y = 0; y < H; y += 32 * k) { c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
       // furo do cordão
-      c.fillStyle = "#050505"; roundRect(c, W / 2 - 46, 26, 92, 16, 8); c.fill();
-      c.fillStyle = "#8b8b90"; c.font = `500 18px ui-monospace, monospace`; c.textAlign = "left";
-      c.fillText("leonardo.dev", 40, 92);
-      c.textAlign = "right"; c.fillText("ID · 2026", W - 40, 92);
+      c.fillStyle = "#050505"; roundRect(c, W / 2 - 46 * k, 26 * k, 92 * k, 16 * k, 8 * k); c.fill();
+      c.fillStyle = "#8b8b90"; c.font = `500 ${18 * k}px ui-monospace, monospace`; c.textAlign = "left";
+      c.fillText("leonardo.dev", 40 * k, 92 * k);
+      c.textAlign = "right"; c.fillText("ID · 2026", W - 40 * k, 92 * k);
       // moldura da foto; a imagem entra quando carregar (abaixo)
-      c.fillStyle = "#f4f4f4"; roundRect(c, 40, 120, W - 80, 340, 18); c.fill();
-      c.textAlign = "left"; c.fillStyle = "#fff"; c.font = `900 46px ${disp}`;
-      c.fillText("LEONARDO", 40, 530); c.fillText("CAPELLA", 40, 584);
-      c.fillStyle = "#a1a1a6"; c.font = `400 21px ${body}`;
-      c.fillText("Dados & Automações", 40, 626);
+      c.fillStyle = "#f4f4f4"; roundRect(c, 40 * k, 120 * k, W - 80 * k, 340 * k, 18 * k); c.fill();
+      c.textAlign = "left"; c.fillStyle = "#fff"; c.font = `900 ${46 * k}px ${disp}`;
+      c.fillText("LEONARDO", 40 * k, 530 * k); c.fillText("CAPELLA", 40 * k, 584 * k);
+      c.fillStyle = "#a1a1a6"; c.font = `400 ${21 * k}px ${body}`;
+      c.fillText("Dados & Automações", 40 * k, 626 * k);
       c.fillStyle = "#fff";
-      for (let i = 0, x = 40; x < W - 40; i++) { const w = [2, 4, 1, 3][i % 4]; c.fillRect(x, 656, w, 34); x += w + 4; }
+      for (let i = 0, x = 40 * k; x < W - 40 * k; i++) { const w = [2, 4, 1, 3][i % 4] * k; c.fillRect(x, 656 * k, w, 34 * k); x += w + 4 * k; }
     });
     const back = canvasTexture(W, H, (c) => {
       c.fillStyle = "#0e0e0f"; c.fillRect(0, 0, W, H);
-      c.fillStyle = "#fff"; c.textAlign = "center"; c.font = `900 120px ${disp}`;
-      c.fillText("LC", W / 2, H / 2 + 40);
-      c.fillStyle = "#8b8b90"; c.font = `500 18px ui-monospace, monospace`;
-      c.fillText("PORTO ALEGRE · RS", W / 2, H - 70);
+      c.fillStyle = "#fff"; c.textAlign = "center"; c.font = `900 ${120 * k}px ${disp}`;
+      c.fillText("LC", W / 2, H / 2 + 40 * k);
+      c.fillStyle = "#8b8b90"; c.font = `500 ${18 * k}px ui-monospace, monospace`;
+      c.fillText("PORTO ALEGRE · RS", W / 2, H - 70 * k);
     });
-    const strap = canvasTexture(512, 64, (c) => {
-      c.fillStyle = "#3a3a3f"; c.fillRect(0, 0, 512, 64);
-      c.fillStyle = "#5a5a60"; c.fillRect(0, 0, 512, 3); c.fillRect(0, 61, 512, 3);
-      c.fillStyle = "#fff"; c.font = `700 22px ${disp}`; c.textBaseline = "middle";
-      c.fillText("LEONARDO CAPELLA ✦", 18, 34);
+    const strap = canvasTexture(2048, 256, (c) => {
+      c.fillStyle = "#3a3a3f"; c.fillRect(0, 0, 2048, 256);
+      c.fillStyle = "#5a5a60"; c.fillRect(0, 0, 2048, 12); c.fillRect(0, 244, 2048, 12);
+      c.fillStyle = "#fff"; c.font = `700 88px ${disp}`; c.textBaseline = "middle";
+      c.fillText("LEONARDO CAPELLA ✦", 72, 136);
     });
     strap.wrapS = strap.wrapT = THREE.RepeatWrapping;
     // foto 3x4 (quadrada, fundo branco) recortada no centro para a moldura 432×340
@@ -254,10 +254,10 @@ function useBadgeTextures() {
     img.decoding = "async";
     const draw = () => {
       const c = (front.image as HTMLCanvasElement).getContext("2d")!;
-      const fw = W - 80, fh = 340, r = fw / fh;
+      const fw = W - 80 * k, fh = 340 * k, r = fw / fh;
       const sh = img.height * 0.82, sw = sh * r; // corta um pouco do topo/peito para enquadrar o rosto
-      c.save(); roundRect(c, 40, 120, fw, fh, 18); c.clip();
-      c.drawImage(img, (img.width - sw) / 2, img.height * 0.04, sw, sh, 40, 120, fw, fh);
+      c.save(); roundRect(c, 40 * k, 120 * k, fw, fh, 18 * k); c.clip();
+      c.drawImage(img, (img.width - sw) / 2, img.height * 0.04, sw, sh, 40 * k, 120 * k, fw, fh);
       c.restore();
       front.needsUpdate = true;
     };

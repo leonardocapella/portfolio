@@ -10,7 +10,10 @@ export function canvasTexture(w: number, h: number, draw: (ctx: CanvasRenderingC
   draw(c.getContext("2d")!);
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace;
-  t.anisotropy = 8;
+  t.generateMipmaps = true;
+  t.minFilter = THREE.LinearMipmapLinearFilter;
+  t.magFilter = THREE.LinearFilter;
+  t.anisotropy = 16;
   return t;
 }
 

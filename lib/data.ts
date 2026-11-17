@@ -254,5 +254,11 @@ export const CERTS: { title: string; org: string; year: string; url?: string }[]
 export const CREDENTIALS = [
   { kind: "Formação", title: "Bacharelado em Ciência da Computação", org: "UniRitter · Campus FAPA, Porto Alegre", when: "Em andamento" },
   { kind: "Experiência", title: "Analista de TI/CRM · Automação de Processos e IA", org: "V4 Company Mendes & Santos", when: "06/2026 · atual" },
-  { kind: "Idiomas", title: "Inglês e Espanhol avançados", org: "Português nativo", when: "" },
+];
+
+// Idiomas (fonte: currículo oficial). Nível em texto, sem nota nem barra: o CV não dá escala.
+export const LANGS = [
+  { code: "PT", name: "Português", level: "Nativo", note: "Língua materna" },
+  { code: "EN", name: "Inglês", level: "Avançado", note: "Documentação, reunião e escrita técnica" },
+  { code: "ES", name: "Espanhol", level: "Avançado", note: "Conversa e leitura" },
 ];

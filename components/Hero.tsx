@@ -47,6 +47,9 @@ export default function Hero() {
       </div>
       <div className="relative h-[520px] min-w-0 md:h-svh md:self-start" data-hot>
         <Lanyard />
+        <motion.p {...up(1.2)} className="pointer-events-none absolute inset-x-0 bottom-2 text-center font-mono text-[11px] text-white/30 md:bottom-[18svh]">
+          puxa o crachá · dois toques viram
+        </motion.p>
       </div>
       <motion.a href="#sobre" {...up(1)} className="label absolute bottom-6 left-1/2 -translate-x-1/2">role ↓</motion.a>
     </section>

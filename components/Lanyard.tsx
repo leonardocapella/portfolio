@@ -10,9 +10,11 @@ import GLBoundary from "./GLBoundary";
 import { asset } from "@/lib/base";
 
 // Crachá 3D. Fita é uma faixa reta (geometria fixa) e a presilha é filha do
-// cartão: os dois giram juntos. Arrastar o cartão puxa o conjunto; parado, a
-// mola traz de volta pro centro e fica. Sem Rapier e sem meshline: os dois
-// faziam a fita trocar de forma e o crachá cair sozinho.
+// cartão: os dois giram juntos. Arrastar o cartão gira o conjunto e, puxando
+// para longe do pivô, estica a fita; ao soltar, duas molas (ângulo e tração)
+// devolvem tudo ao repouso com a inércia do gesto. Duplo clique vira o cartão.
+// Sem Rapier e sem meshline: os dois faziam a fita trocar de forma e o crachá
+// cair sozinho.
 export default function Lanyard() {
   return <GLBoundary fallback={<BadgeFallback />}><LanyardCanvas /></GLBoundary>;
 }
@@ -61,39 +63,65 @@ function LanyardCanvas() {
 
 // o grupo gira em torno do ponto de fixação, no topo da fita
 const PIVOT_Y = 4.6;
+const STRAP_LEN = 2.515, CARD_Y = 0.75 - PIVOT_Y;
 
-// mola angular: ângulo e velocidade. Parado, o alvo é 0 e a mola amortece até zerar.
+// duas molas, as duas com alvo 0 e integração por passo fixo:
+// ângulo (balanço lateral) e tração (quanto a fita foi esticada para baixo).
 const SPRING = 14, DAMP = 6, DRAG_MAX = 1.05; // balança 1–2 vezes e assenta em ~1,5 s
+const PULL_SPRING = 30, PULL_DAMP = 7, PULL_MAX = 1.1; // volta rápida, com um quique; teto deixa o cartão dentro do quadro
+const VEL_MAX = 9, PULL_VEL_MAX = 14; // teto da inércia herdada do gesto
 
 function Badge() {
   const rig = useRef<THREE.Group>(null!);
+  const strapMesh = useRef<THREE.Mesh>(null!);
+  const card = useRef<THREE.Group>(null!);
+  const cardMesh = useRef<THREE.Mesh>(null!);
   const angle = useRef(0);
   const vel = useRef(0);
+  const pull = useRef(0); // esticada da fita, em unidades da cena
+  const pullVel = useRef(0);
+  const flipTo = useRef(0); // 0 = frente, PI = verso (duplo clique)
   const dragging = useRef(false);
   const grab = useRef(0); // ângulo do cartão no instante do clique, menos o do ponteiro
+  const grabDist = useRef(0); // tração no instante do clique, menos a distância do ponteiro
+  const last = useRef({ t: 0, a: 0, p: 0 }); // amostra anterior, para estimar a velocidade do gesto
   const { front, back, strap } = useBadgeTextures();
   const { camera, gl, size } = useThree();
   const tmp = useMemo(() => ({ ndc: new THREE.Vector3(), hit: new THREE.Vector3(), pivot: new THREE.Vector3() }), []);
 
-  // ponteiro (px da tela) vira o ângulo que o cartão teria se o dedo estivesse nele
-  const pointerAngle = (clientX: number, clientY: number) => {
+  // ponteiro (px da tela) vira o ângulo e a distância que o cartão teria se o dedo estivesse nele
+  const pointerPolar = (clientX: number, clientY: number) => {
     const r = gl.domElement.getBoundingClientRect();
     tmp.ndc.set(((clientX - r.left) / size.width) * 2 - 1, -((clientY - r.top) / size.height) * 2 + 1, 0.5).unproject(camera);
     const dirZ = tmp.ndc.z - camera.position.z;
     tmp.hit.copy(camera.position).addScaledVector(tmp.ndc.sub(camera.position), -camera.position.z / dirZ);
     rig.current.getWorldPosition(tmp.pivot);
-    return Math.atan2(tmp.hit.x - tmp.pivot.x, -(tmp.hit.y - tmp.pivot.y));
+    const dx = tmp.hit.x - tmp.pivot.x, dy = tmp.hit.y - tmp.pivot.y;
+    return { a: Math.atan2(dx, -dy), d: Math.hypot(dx, dy) };
+  };
+
+  // arrastar: gira e estica ao mesmo tempo, guardando a velocidade de cada eixo
+  const drag = (clientX: number, clientY: number) => {
+    const { a, d } = pointerPolar(clientX, clientY);
+    const na = THREE.MathUtils.clamp(a + grab.current, -DRAG_MAX, DRAG_MAX);
+    const np = THREE.MathUtils.clamp(d + grabDist.current, 0, PULL_MAX);
+    const t = performance.now(), dt = (t - last.current.t) / 1000;
+    if (dt > 0.004) {
+      vel.current = THREE.MathUtils.clamp((na - last.current.a) / dt, -VEL_MAX, VEL_MAX);
+      pullVel.current = THREE.MathUtils.clamp((np - last.current.p) / dt, -PULL_VEL_MAX, PULL_VEL_MAX);
+      last.current = { t, a: na, p: np };
+    }
+    angle.current = na;
+    pull.current = np;
   };
 
   useEffect(() => {
-    const move = (e: PointerEvent) => {
-      if (!dragging.current) return;
-      angle.current = THREE.MathUtils.clamp(pointerAngle(e.clientX, e.clientY) + grab.current, -DRAG_MAX, DRAG_MAX);
-      vel.current = 0;
-    };
+    const move = (e: PointerEvent) => { if (dragging.current) drag(e.clientX, e.clientY); };
     const up = () => {
       if (!dragging.current) return;
       dragging.current = false;
+      // gesto parado antes de soltar não deve jogar o crachá: amostra velha vira velocidade zero
+      if (performance.now() - last.current.t > 90) { vel.current = 0; pullVel.current = 0; }
       document.body.style.cursor = "";
     };
     // no celular: só enquanto o dedo arrasta o crachá a página não rola. Fora dele o scroll é livre.
@@ -101,7 +129,7 @@ function Badge() {
       if (!dragging.current) return;
       e.preventDefault();
       const t = e.touches[0];
-      if (t) angle.current = THREE.MathUtils.clamp(pointerAngle(t.clientX, t.clientY) + grab.current, -DRAG_MAX, DRAG_MAX);
+      if (t) drag(t.clientX, t.clientY);
     };
     const el = gl.domElement;
     addEventListener("pointermove", move);
@@ -116,42 +144,57 @@ function Badge() {
   });
 
   useFrame((_, delta) => {
-    if (!dragging.current && (angle.current || vel.current)) {
+    if (!dragging.current && (angle.current || vel.current || pull.current || pullVel.current)) {
       // passos fixos de 1/120 s: a mola segue o relógio real em 10 ou 120 fps (GPU fraca inclusive).
       // Teto de 0.5 s para a volta de aba em segundo plano; com subpassos fixos a mola não explode.
       for (let t = Math.min(delta, 0.5); t > 0; t -= 1 / 120) {
         const dt = Math.min(t, 1 / 120);
         vel.current += (-SPRING * angle.current - DAMP * vel.current) * dt;
         angle.current += vel.current * dt;
+        pullVel.current += (-PULL_SPRING * pull.current - PULL_DAMP * pullVel.current) * dt;
+        pull.current = Math.max(0, pull.current + pullVel.current * dt);
       }
       // perto do repouso, encaixa em 0: parado não fica oscilando em décimos de pixel
       if (Math.abs(angle.current) < 0.002 && Math.abs(vel.current) < 0.01) { angle.current = 0; vel.current = 0; }
+      if (pull.current < 0.001 && Math.abs(pullVel.current) < 0.01) { pull.current = 0; pullVel.current = 0; }
     }
     rig.current.rotation.z = angle.current;
-    if (process.env.NODE_ENV !== "production") (window as unknown as { __badgeAngle?: number }).__badgeAngle = angle.current;
+    // a fita estica a partir do pivô e o cartão desce junto. A trama estica junto (repeat fixo):
+    // aumentar o repeat acrescentaria cópias do texto e deixava a fita ilegível.
+    const stretch = 1 + pull.current / STRAP_LEN;
+    strapMesh.current.scale.y = stretch;
+    strapMesh.current.position.y = (-STRAP_LEN / 2) * stretch;
+    card.current.position.y = CARD_Y - pull.current;
+    cardMesh.current.rotation.y = THREE.MathUtils.damp(cardMesh.current.rotation.y, flipTo.current, 7, delta);
+    if (process.env.NODE_ENV !== "production") Object.assign(window as unknown as Record<string, number>, { __badgeAngle: angle.current, __badgePull: pull.current });
   });
 
   const down = (e: { clientX: number; clientY: number; pointerType: string; stopPropagation: () => void }) => {
     e.stopPropagation();
+    const { a, d } = pointerPolar(e.clientX, e.clientY);
     dragging.current = true;
     vel.current = 0;
-    grab.current = angle.current - pointerAngle(e.clientX, e.clientY);
+    pullVel.current = 0;
+    grab.current = angle.current - a;
+    grabDist.current = pull.current - d;
+    last.current = { t: performance.now(), a: angle.current, p: pull.current };
     if (e.pointerType !== "touch") document.body.style.cursor = "grabbing";
   };
 
   return (
     <group ref={rig} position={[0, PIVOT_Y, 0]}>
-      {/* fita reta, do pivô até o centro do anel (passa por dentro dele). Geometria fixa: não muda de forma. */}
-      <mesh position={[0, -2.515 / 2, 0.05]}>
-        <boxGeometry args={[0.16, 2.515, 0.012]} />
+      {/* fita reta, do pivô até o centro do anel (passa por dentro dele). Geometria fixa: a esticada é escala em y. */}
+      <mesh ref={strapMesh} position={[0, -STRAP_LEN / 2, 0.05]}>
+        <boxGeometry args={[0.16, STRAP_LEN, 0.012]} />
         <meshStandardMaterial map={strap} roughness={0.6} />
       </mesh>
-      <group position={[0, 0.75 - PIVOT_Y, 0]}>
+      <group ref={card} position={[0, CARD_Y, 0]}>
         <group position={[0, 0, -0.05]}
           onPointerOver={(e) => { if (e.pointerType === "touch") return; e.stopPropagation(); document.body.style.cursor = "grab"; }}
           onPointerOut={() => { if (!dragging.current) document.body.style.cursor = ""; }}
-          onPointerDown={down}>
-          <mesh>
+          onPointerDown={down}
+          onDoubleClick={(e) => { e.stopPropagation(); flipTo.current = flipTo.current ? 0 : Math.PI; }}>
+          <mesh ref={cardMesh}>
             <boxGeometry args={[1.6, 2.25, 0.03]} />
             <meshPhysicalMaterial attach="material-0" color="#1a1a1a" />
             <meshPhysicalMaterial attach="material-1" color="#1a1a1a" />

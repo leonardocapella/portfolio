@@ -12,6 +12,8 @@ import GLBoundary from "./GLBoundary";
 
 const COLS = 5, SIZE = 1, GAP = 0.16, H = 0.55;
 const STEP = SIZE + GAP;
+// última tecla, só assinatura: fecha a grade em fileiras de 5 (checado em lib/data.check.ts)
+const LC: Tech = { id: "lc", label: "Leonardo Capella", group: "Linguagens", text: "LC", color: "#EDEDED", ink: "#111", phrase: "" };
 const SMOOTH = typeof window !== "undefined" && isTouch() ? 2 : 4; // menos vértices em celular
 
 // Estados do teclado por seção. x em "meia largura de tela" (−1..1), resto em unidades da cena.
@@ -68,9 +70,22 @@ function Board() {
   const group = useRef<THREE.Group>(null!);
   const pose = useRef<Pose>({ ...POSES.hidden });
   const interactive = useRef(false);
+  const tilt = useRef({ x: 0, y: 0 }); // inclinação de parallax que segue o ponteiro
   const { viewport, size } = useThree();
   const halfW = useRef(viewport.width / 2);
   halfW.current = viewport.width / 2;
+
+  // ponteiro inclina o teclado de leve; no celular (sem hover) fica reto
+  useEffect(() => {
+    if (isTouch()) return;
+    const on = (e: PointerEvent) => {
+      if (!interactive.current) return;
+      tilt.current.y = ((e.clientX / innerWidth) * 2 - 1) * 0.26;
+      tilt.current.x = ((e.clientY / innerHeight) * 2 - 1) * 0.16;
+    };
+    addEventListener("pointermove", on, { passive: true });
+    return () => removeEventListener("pointermove", on);
+  }, []);
 
   // timeline do scroll: cada transição é uma faixa de scroll própria
   useEffect(() => {
@@ -91,17 +106,23 @@ function Board() {
 
   useFrame((_, dt) => {
     const g = group.current, p = pose.current, k = 6;
+    const t = interactive.current ? tilt.current : { x: 0, y: 0 };
     g.position.x = THREE.MathUtils.damp(g.position.x, p.x * halfW.current, k, dt);
     g.position.y = THREE.MathUtils.damp(g.position.y, p.y, k, dt);
     g.position.z = THREE.MathUtils.damp(g.position.z, p.z, k, dt);
-    g.rotation.x = THREE.MathUtils.damp(g.rotation.x, p.rx, k, dt);
-    g.rotation.y = THREE.MathUtils.damp(g.rotation.y, p.ry, k, dt);
+    g.rotation.x = THREE.MathUtils.damp(g.rotation.x, p.rx + t.x, k, dt);
+    g.rotation.y = THREE.MathUtils.damp(g.rotation.y, p.ry + t.y, k, dt);
     g.rotation.z = THREE.MathUtils.damp(g.rotation.z, p.rz, k, dt);
     g.scale.setScalar(THREE.MathUtils.damp(g.scale.x, p.s, k, dt));
   });
 
   const rows = Math.ceil((KEYS.length + 1) / COLS);
   const w = COLS * STEP + 0.3, d = rows * STEP + 0.3;
+  // onde cada tecla está na grade: a onda de uma tecla apertada usa a distância até as vizinhas
+  const spots = useMemo(() => {
+    const all = [...KEYS, LC];
+    return new Map(all.map((t, i) => [t.id, [i % COLS, Math.floor(i / COLS)] as [number, number]]));
+  }, []);
   return (
     <group ref={group} rotation-order="ZXY">
       {/* teclas modeladas no plano XZ (y = altura); +90° em x deixa o tampo virado para a câmera */}
@@ -109,33 +130,50 @@ function Board() {
         <RoundedBox args={[w, 0.35, d]} radius={0.16} smoothness={4} position={[0, -0.12, 0]}>
           <meshStandardMaterial color="#141416" roughness={0.6} metalness={0.4} />
         </RoundedBox>
-        {KEYS.map((t, i) => (
-          <Key key={t.id} tech={t} interactive={interactive}
+        {[...KEYS, LC].map((t, i) => (
+          <Key key={t.id} tech={t} interactive={interactive} spots={spots}
             position={[(i % COLS - (COLS - 1) / 2) * STEP, H / 2, (Math.floor(i / COLS) - (rows - 1) / 2) * STEP]} />
         ))}
-        <Key tech={{ id: "lc", label: "Leonardo Capella", group: "Linguagens", text: "LC", color: "#EDEDED", ink: "#111", phrase: "" }} interactive={interactive}
-          position={[((KEYS.length % COLS) - (COLS - 1) / 2) * STEP, H / 2, (rows - 1 - (rows - 1) / 2) * STEP]} />
       </group>
     </group>
   );
 }
 
-function Key({ tech, position, interactive }: { tech: Tech; position: [number, number, number]; interactive: React.RefObject<boolean> }) {
+function Key({ tech, position, interactive, spots }: { tech: Tech; position: [number, number, number]; interactive: React.RefObject<boolean>; spots: Map<string, [number, number]> }) {
   const ref = useRef<THREE.Group>(null!);
+  const mat = useRef<THREE.MeshStandardMaterial>(null!);
   const press = useRef(0); // 0..1 afundamento alvo
+  const glow = useRef(0); // brilho da tecla escolhida, separado do afundamento
+  const wave = useRef({ delay: 0, amt: 0 }); // quique atrasado quando a vizinha é apertada
   const hover = useRef(false);
   const tex = useMemo(() => keyTexture(tech), [tech]);
 
   useEffect(() => {
-    const on = (e: Event) => { if ((e as CustomEvent<string>).detail === tech.id) press.current = 1; };
+    const on = (e: Event) => {
+      const id = (e as CustomEvent<string>).detail;
+      if (id === tech.id) { press.current = 1; glow.current = 1; return; }
+      // onda: sai da tecla apertada e morre em ~3 casas de distância
+      const a = spots.get(id), b = spots.get(tech.id);
+      if (!a || !b) return;
+      const dist = Math.hypot(a[0] - b[0], a[1] - b[1]);
+      if (dist > 3.2) return;
+      wave.current = { delay: dist * 0.045, amt: 0.42 / (1 + dist) };
+    };
     addEventListener("key-press", on);
     return () => removeEventListener("key-press", on);
-  }, [tech.id]);
+  }, [tech.id, spots]);
 
   useFrame((_, dt) => {
+    const wv = wave.current;
+    if (wv.amt) {
+      wv.delay -= dt;
+      if (wv.delay <= 0) { press.current = Math.max(press.current, wv.amt); wv.amt = 0; }
+    }
     const target = position[1] - press.current * 0.32 + (hover.current ? 0.06 : 0);
     ref.current.position.y = THREE.MathUtils.damp(ref.current.position.y, target, 18, dt);
     press.current = THREE.MathUtils.damp(press.current, 0, 5, dt);
+    glow.current = THREE.MathUtils.damp(glow.current, 0, 2.2, dt);
+    mat.current.emissiveIntensity = glow.current * 0.55;
   });
 
   return (
@@ -144,7 +182,7 @@ function Key({ tech, position, interactive }: { tech: Tech; position: [number, n
         onPointerOver={(e) => { if (!interactive.current) return; e.stopPropagation(); hover.current = true; document.body.dataset.keyhover = "1"; }}
         onPointerOut={() => { hover.current = false; delete document.body.dataset.keyhover; }}
         onClick={(e) => { if (!interactive.current) return; e.stopPropagation(); dispatchEvent(new CustomEvent("key-press", { detail: tech.id })); }}>
-        <meshStandardMaterial color={tech.color} roughness={0.35} metalness={0.05} />
+        <meshStandardMaterial ref={mat} color={tech.color} emissive={tech.color} emissiveIntensity={0} roughness={0.35} metalness={0.05} />
       </RoundedBox>
       <mesh rotation-x={-Math.PI / 2} position-y={H / 2 + 0.002}>
         <planeGeometry args={[SIZE - 0.22, SIZE - 0.22]} />

@@ -5,7 +5,7 @@ import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useEffect, useRef } from "react";
 import Reveal, { RevealWords } from "./Reveal";
 import TransitionLink from "./TransitionLink";
-import { PROFILE, PROJECTS } from "@/lib/data";
+import { LANGS, PROFILE, PROJECTS } from "@/lib/data";
 
 function Count({ to }: { to: number }) {
   const ref = useRef<HTMLSpanElement>(null);
@@ -22,7 +22,7 @@ function Count({ to }: { to: number }) {
 
 const STATS = [
   { icon: "</>", n: PROJECTS.length, label: "Projetos", href: "/#portfolio" },
-  { icon: "◎", n: 2, label: "Idiomas além do português", href: "/#portfolio" },
+  { icon: "◎", n: LANGS.length, label: "Idiomas · 2 avançados", href: "/#portfolio" },
   { icon: "⌘", n: 413, label: "Checks automáticos antes de cada SQL", href: "/projetos/hub-v4" },
 ];
 

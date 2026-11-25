@@ -12,7 +12,8 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<"/projetos/[slug]">) {
   const { slug } = await params;
   const p = PROJECTS.find((x) => x.slug === slug);
-  return { title: p ? `${p.title} · Leonardo Capella` : "Projeto" };
+  if (!p) return { title: "Projeto" };
+  return { title: `${p.title} · Leonardo Capella`, description: p.short };
 }
 
 export default function Page({ params }: PageProps<"/projetos/[slug]">) {
@@ -33,7 +34,7 @@ async function Projeto({ params }: { params: Promise<{ slug: string }> }) {
     <>
       <div className="blueprint" /><div className="vignette" />
       <main className="mx-auto max-w-6xl px-5 pb-24 pt-32 md:px-8">
-        <TransitionLink href="/#portfolio" className="label inline-flex items-center gap-2 hover:!text-white">← Voltar</TransitionLink>
+        <TransitionLink href="/#projetos" className="label inline-flex items-center gap-2 hover:!text-white">← Voltar</TransitionLink>
         <div className="mt-8 grid gap-10 md:grid-cols-[1.2fr_.8fr]">
           <div>
             <Reveal><p className="label" style={{ color: p.color }}>{p.tag}</p></Reveal>
@@ -41,6 +42,12 @@ async function Projeto({ params }: { params: Promise<{ slug: string }> }) {
             {p.long.map((t, k) => (
               <Reveal key={k} delay={0.1 + k * 0.05}><p className="mt-6 max-w-2xl leading-relaxed text-white/60">{t}</p></Reveal>
             ))}
+            {(p.url || p.repo) && (
+              <Reveal delay={0.22} className="mt-8 flex flex-wrap gap-3">
+                {p.url && <a href={p.url} target="_blank" rel="noopener noreferrer" className="glass rounded-xl px-4 py-2.5 text-sm hover:border-white/25">Ver o site ↗</a>}
+                {p.repo && <a href={p.repo} target="_blank" rel="noopener noreferrer" className="glass rounded-xl px-4 py-2.5 text-sm hover:border-white/25">Código no GitHub ↗</a>}
+              </Reveal>
+            )}
             <Reveal delay={0.25} className="mt-10 grid grid-cols-2 gap-3 sm:max-w-md">
               <div className="glass rounded-2xl p-4"><p className="title-xl text-2xl">{p.tech.length}</p><p className="label mt-1 !text-[10px]">tecnologias</p></div>
               <div className="glass rounded-2xl p-4"><p className="title-xl text-2xl">{p.features.length}</p><p className="label mt-1 !text-[10px]">destaques</p></div>

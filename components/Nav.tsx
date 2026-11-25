@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import TransitionLink from "./TransitionLink";
 
 const LINKS = [
-  ["inicio", "Início"], ["sobre", "Sobre"], ["projetos", "Projetos"], ["skills", "Skills"], ["portfolio", "Portfólio"], ["contato", "Contato"],
+  ["inicio", "Início"], ["sobre", "Sobre"], ["projetos", "Projetos"], ["skills", "Skills"], ["portfolio", "Credenciais"], ["contato", "Contato"],
 ] as const;
 
 export default function Nav() {

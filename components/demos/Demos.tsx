@@ -264,6 +264,238 @@ export function SitesDemo({ c }: { c: string }) {
   );
 }
 
+/* Atendimento IA: a conversa qualifica e, fechada a qualificação, vai para o humano */
+export function AtendimentoDemo({ c }: { c: string }) {
+  const { ref, i } = useTicker(1400, 5);
+  const chat = [
+    { de: "cliente", txt: "oi, queria um armário" },
+    { de: "ia", txt: "Claro! É para quarto ou cozinha?" },
+    { de: "cliente", txt: "cozinha, preciso pra janeiro" },
+    { de: "ia", txt: "Perfeito. Você é de qual cidade?" },
+  ];
+  const campos = [["interesse", 2], ["prazo", 3], ["cidade", 5]] as const;
+  const quente = i >= 4;
+  return (
+    <div ref={ref} className="grid h-full grid-cols-[1.4fr_1fr] gap-3 text-[11px]">
+      <div className="flex flex-col gap-1.5 rounded-xl border border-white/[.07] bg-black/30 p-2.5">
+        <p className="label !text-[9px]">WhatsApp</p>
+        {chat.map((m, k) => (
+          <motion.div key={k} initial={{ opacity: 0, y: 6 }} animate={{ opacity: k <= i ? 1 : 0.15, y: 0 }}
+            className={`max-w-[85%] rounded-lg px-2 py-1 text-[9px] leading-snug ${m.de === "ia" ? "self-end text-black" : "self-start bg-white/10 text-white/70"}`}
+            style={m.de === "ia" ? { background: c } : undefined}>
+            {m.txt}
+          </motion.div>
+        ))}
+      </div>
+      <div className="flex flex-col gap-2">
+        <div className="rounded-xl border border-white/[.07] bg-black/30 p-2.5">
+          <p className="label !text-[9px]">qualificação</p>
+          <div className="mt-2 flex flex-col gap-1.5">
+            {campos.map(([nome, quando]) => (
+              <div key={nome} className="flex items-center gap-1.5 text-[9px]">
+                <motion.span animate={{ opacity: i >= quando ? 1 : 0.2 }} style={{ color: i >= quando ? c : undefined }}>✓</motion.span>
+                <span className={i >= quando ? "text-white/70" : "text-white/25"}>{nome}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <motion.div animate={{ opacity: quente ? 1 : 0.2, scale: quente ? 1 : 0.97 }}
+          className="flex flex-1 flex-col justify-center rounded-xl border p-2.5 text-center"
+          style={{ borderColor: quente ? c : "rgba(255,255,255,.07)", background: quente ? `${c}1a` : "rgba(0,0,0,.3)" }}>
+          <p className="font-mono text-[9px]" style={{ color: c }}>lead quente</p>
+          <p className="mt-1 text-[9px] text-white/60">passou para o vendedor</p>
+        </motion.div>
+      </div>
+    </div>
+  );
+}
+
+/* Rumo à UFRGS: responde, erra, e o erro volta na revisão */
+export function EstudoDemo({ c }: { c: string }) {
+  const { ref, i } = useTicker(1100, 5);
+  const alts = ["Mitocôndria", "Ribossomo", "Complexo de Golgi", "Lisossomo"];
+  const escolhida = 2, certa = 0;
+  return (
+    <div ref={ref} className="grid h-full grid-cols-[1.5fr_1fr] gap-3 text-[11px]">
+      <div className="flex flex-col gap-2 rounded-xl border border-white/[.07] bg-black/30 p-2.5">
+        <div className="flex items-center justify-between">
+          <p className="label !text-[9px]">biologia</p>
+          <span className="font-mono text-[9px] text-white/35">07 / 20</span>
+        </div>
+        <div className="space-y-1"><div className="h-1.5 w-full rounded bg-white/12" /><div className="h-1.5 w-3/5 rounded bg-white/12" /></div>
+        <div className="mt-1 flex flex-col gap-1.5">
+          {alts.map((a, k) => {
+            const marcada = i >= 1 && k === escolhida, revelada = i >= 2;
+            const cor = revelada && k === certa ? "#4ADE80" : revelada && marcada ? "#F87171" : undefined;
+            return (
+              <motion.div key={a} animate={{ borderColor: cor ?? "rgba(255,255,255,.1)", opacity: marcada || (revelada && k === certa) ? 1 : 0.45 }}
+                className="flex items-center gap-2 rounded-md border px-2 py-1 text-[9px]">
+                <span className="font-mono" style={{ color: cor }}>{String.fromCharCode(97 + k)}</span>
+                <span className="text-white/70">{a}</span>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+      <div className="flex flex-col gap-2">
+        <motion.div animate={{ opacity: i >= 3 ? 1 : 0.25 }} className="rounded-xl border border-white/[.07] bg-black/30 p-2.5">
+          <p className="label !text-[9px]">revisão</p>
+          <p className="mt-2 text-[9px] leading-snug text-white/60">o erro volta na próxima rodada</p>
+          <motion.div animate={{ width: i >= 3 ? "70%" : "0%" }} className="mt-2 h-1.5 rounded" style={{ background: c }} />
+        </motion.div>
+        <div className="flex flex-1 flex-col justify-end gap-1 rounded-xl border border-white/[.07] bg-black/30 p-2.5">
+          <p className="label !text-[9px]">acessibilidade</p>
+          {["alto contraste", "fonte dislexia", "reduzir movimento"].map((o, k) => (
+            <motion.div key={o} animate={{ opacity: i >= 4 && k === 0 ? 1 : 0.3 }} className="flex items-center justify-between text-[9px] text-white/60">
+              {o}
+              <span className="h-2 w-4 rounded-full" style={{ background: i >= 4 && k === 0 ? c : "rgba(255,255,255,.15)" }} />
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* Vagas: currículo entra, IA lê e devolve nota que ordena a fila */
+export function VagasDemo({ c }: { c: string }) {
+  const { ref, i } = useTicker(1200, 5);
+  const fila = [
+    { n: "Candidato A", nota: 8.0, cor: "#4ADE80" },
+    { n: "Candidato B", nota: 5.5, cor: "#FBBF24" },
+    { n: "Candidato C", nota: 2.0, cor: "#F87171" },
+  ];
+  return (
+    <div ref={ref} className="grid h-full grid-rows-[auto_1fr] gap-3 text-[11px]">
+      <div className="flex items-center gap-2 rounded-xl border border-white/[.07] bg-black/30 p-2.5">
+        <span className="rounded bg-red-500/80 px-1 font-mono text-[8px] font-bold">PDF</span>
+        <span className="h-1.5 flex-1 rounded bg-white/15" />
+        <motion.span animate={{ opacity: i >= 1 ? 1 : 0.2 }} className="font-mono text-[9px]" style={{ color: c }}>
+          {i >= 2 ? "lido ✓" : "lendo…"}
+        </motion.span>
+      </div>
+      <div className="flex flex-col gap-1.5 rounded-xl border border-white/[.07] bg-black/30 p-2.5">
+        <div className="flex items-center justify-between">
+          <p className="label !text-[9px]">fila de triagem</p>
+          <span className="font-mono text-[9px] text-white/35">nota IA</span>
+        </div>
+        {fila.map((f, k) => (
+          <motion.div key={f.n} initial={{ opacity: 0, x: -8 }} animate={{ opacity: i >= k + 2 ? 1 : 0.15, x: 0 }}
+            className="flex items-center gap-2 rounded-md border border-white/10 px-2 py-1.5">
+            <span className="flex-1 text-[9px] text-white/70">{f.n}</span>
+            <span className="h-1.5 w-10 overflow-hidden rounded bg-white/10">
+              <motion.span className="block h-full" animate={{ width: i >= k + 2 ? `${f.nota * 10}%` : "0%" }} style={{ background: f.cor }} />
+            </span>
+            <span className="w-6 text-right font-mono text-[9px]" style={{ color: f.cor }}>{f.nota.toFixed(1)}</span>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* Mini-pages: a esteira do lead até o site publicado */
+export function PipelineDemo({ c }: { c: string }) {
+  const { ref, i } = useTicker(950, 6);
+  const passos = ["coleta", "qualifica", "aborda", "gera site", "publica"];
+  return (
+    <div ref={ref} className="flex h-full flex-col justify-center gap-2.5 text-[11px]">
+      {passos.map((p, k) => {
+        const feito = i > k, ativo = i === k;
+        return (
+          <motion.div key={p} animate={{ opacity: feito || ativo ? 1 : 0.25 }} className="flex items-center gap-2.5">
+            <motion.span animate={{ scale: ativo ? 1.15 : 1 }} className="grid h-5 w-5 shrink-0 place-items-center rounded-full font-mono text-[9px]"
+              style={{ background: feito ? c : "rgba(255,255,255,.08)", color: feito ? "#000" : "rgba(255,255,255,.5)" }}>
+              {feito ? "✓" : k + 1}
+            </motion.span>
+            <span className="w-16 shrink-0 text-[9px] text-white/60">{p}</span>
+            <span className="h-1.5 flex-1 overflow-hidden rounded bg-white/10">
+              <motion.span className="block h-full" animate={{ width: feito ? "100%" : ativo ? "55%" : "0%" }} style={{ background: c }} />
+            </span>
+          </motion.div>
+        );
+      })}
+      <motion.p animate={{ opacity: i >= 5 ? 1 : 0.2 }} className="mt-1 text-center font-mono text-[9px]" style={{ color: c }}>
+        modo de ensaio · nada enviado
+      </motion.p>
+    </div>
+  );
+}
+
+/* Diagnóstico para copy: a ficha vira base de copy */
+export function CopyDemo({ c }: { c: string }) {
+  const { ref, i } = useTicker(1000, 5);
+  const saida = ["posicionamento", "dores", "objeções", "legendas"];
+  return (
+    <div ref={ref} className="grid h-full grid-cols-[1fr_1.1fr] gap-3 text-[11px]">
+      <div className="flex flex-col gap-2 rounded-xl border border-white/[.07] bg-black/30 p-2.5">
+        <p className="label !text-[9px]">ficha da empresa</p>
+        {[0, 1, 2, 3].map((k) => (
+          <motion.div key={k} animate={{ opacity: i > k ? 1 : 0.3 }} className="rounded-md border border-white/10 px-2 py-1.5">
+            <span className="block h-1 w-8 rounded bg-white/25" />
+            <motion.span animate={{ width: i > k ? "100%" : "35%" }} className="mt-1 block h-1.5 rounded" style={{ background: i > k ? `${c}99` : "rgba(255,255,255,.12)" }} />
+          </motion.div>
+        ))}
+      </div>
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-center gap-1.5 rounded-xl border border-white/[.07] bg-black/30 py-1.5">
+          <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 1.4, repeat: Infinity }} className="font-mono text-[9px]" style={{ color: c }}>IA</motion.span>
+        </div>
+        <div className="flex flex-1 flex-col gap-1.5">
+          {saida.map((s, k) => (
+            <motion.div key={s} initial={{ opacity: 0, y: 6 }} animate={{ opacity: i >= k + 1 ? 1 : 0.15, y: 0 }}
+              className="flex items-center gap-1.5 rounded-md border px-2 py-1.5 text-[9px]"
+              style={{ borderColor: i >= k + 1 ? `${c}55` : "rgba(255,255,255,.08)" }}>
+              <span style={{ color: c }}>✦</span><span className="text-white/70">{s}</span>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* Baraúna: o visitante se qualifica sozinho na calculadora antes do contato */
+export function LandingDemo({ c }: { c: string }) {
+  const { ref, i } = useTicker(1150, 5);
+  return (
+    <div ref={ref} className="grid h-full grid-cols-[1fr_1fr] gap-3 text-[11px]">
+      <div className="flex flex-col gap-2">
+        <div className="rounded-xl border border-white/[.07] bg-black/30 p-2.5">
+          <p className="label !text-[9px]">calculadora</p>
+          <p className="mt-2 text-[9px] text-white/45">resíduo / mês</p>
+          <div className="mt-1.5 h-1.5 rounded-full bg-white/10">
+            <motion.div className="h-full rounded-full" animate={{ width: `${20 + i * 18}%` }} style={{ background: c }} />
+          </div>
+          <motion.p key={i} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="mt-2 font-mono text-sm font-bold" style={{ color: c }}>
+            {(2 + i * 1.4).toFixed(1)} t
+          </motion.p>
+        </div>
+        <div className="flex flex-1 flex-col justify-end gap-1 rounded-xl border border-white/[.07] bg-black/30 p-2.5">
+          {["dores", "como funciona", "cases"].map((s, k) => (
+            <motion.div key={s} animate={{ opacity: i >= k ? 0.8 : 0.25 }} className="text-[9px] text-white/60">{s}</motion.div>
+          ))}
+        </div>
+      </div>
+      <motion.div animate={{ opacity: i >= 3 ? 1 : 0.3 }} className="flex flex-col gap-2 rounded-xl border p-2.5"
+        style={{ borderColor: i >= 3 ? `${c}55` : "rgba(255,255,255,.07)" }}>
+        <p className="label !text-[9px]">diagnóstico</p>
+        {[0, 1, 2].map((k) => (
+          <motion.div key={k} animate={{ opacity: i >= k + 2 ? 1 : 0.2 }} className="flex items-center gap-1.5">
+            <span className="h-3 w-3 shrink-0 rounded border border-white/20 text-center font-mono text-[7px] leading-3" style={{ color: c }}>
+              {i >= k + 2 ? "✓" : ""}
+            </span>
+            <span className="h-1.5 flex-1 rounded bg-white/12" />
+          </motion.div>
+        ))}
+        <motion.div animate={{ opacity: i >= 4 ? 1 : 0.15 }} className="mt-auto rounded-md py-1.5 text-center font-mono text-[9px] text-black" style={{ background: c }}>
+          falar com o time
+        </motion.div>
+      </motion.div>
+    </div>
+  );
+}
+
 export const DEMOS: Record<string, (p: { c: string }) => ReactNode> = {
   "hub-v4": HubDemo,
   cobranca: CobrancaDemo,
@@ -271,6 +503,12 @@ export const DEMOS: Record<string, (p: { c: string }) => ReactNode> = {
   "polymarket-scanner": PolymarketDemo,
   "ia-no-terminal": TerminalDemo,
   "roteamento-leads": LeadsDemo,
+  "atendimento-ia": AtendimentoDemo,
+  "rumo-a-ufrgs": EstudoDemo,
+  "vagas-v4": VagasDemo,
+  "mini-pages": PipelineDemo,
+  "diagnostico-copy": CopyDemo,
+  barauna: LandingDemo,
   "sites-criativos": SitesDemo,
 };
 

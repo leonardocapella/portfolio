@@ -26,10 +26,20 @@ const body = localFont({
   display: "swap",
 });
 
+const DESC =
+  "Portfólio de Leonardo Capella, Analista de Dados & Automações em Porto Alegre, RS. Automação de processos, integrações, CRM e IA aplicada. Aberto a oportunidades como Analista de Dados / Automações Júnior.";
+
 export const metadata: Metadata = {
   title: "Leonardo Capella · Analista de Dados & Automações",
-  description:
-    "Portfólio de Leonardo Capella, Analista de Dados & Automações em Porto Alegre, RS. Automação de processos, integrações, CRM e IA aplicada. Aberto a oportunidades como Analista de Dados / Automações Júnior.",
+  description: DESC,
+  openGraph: {
+    type: "website",
+    locale: "pt_BR",
+    siteName: "Leonardo Capella",
+    title: "Leonardo Capella · Analista de Dados & Automações",
+    description: DESC,
+  },
+  twitter: { card: "summary_large_image", title: "Leonardo Capella · Analista de Dados & Automações", description: DESC },
 };
 export const viewport: Viewport = { themeColor: "#070707" };
 

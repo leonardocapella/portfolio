@@ -17,7 +17,7 @@ export default function Projects() {
       </h2>
       <Reveal delay={0.1}>
         <p className="mt-5 max-w-xl text-white/50">
-          Problemas reais do dia a dia, resolvidos com código. Sites públicos aparecem com print real e link. As ferramentas internas aparecem como demos ilustrativas, com dados fictícios.
+          Problemas reais do dia a dia, resolvidos com código. Cada projeto aparece como uma demo animada, com dados fictícios. O link leva ao site de verdade.
         </p>
       </Reveal>
 
@@ -54,15 +54,20 @@ export default function Projects() {
                   <ul className="mt-6 flex flex-wrap gap-2">
                     {p.tech.map((t) => <li key={t} className="rounded-md border border-white/10 px-2.5 py-1 font-mono text-[11px] text-white/60">{t}</li>)}
                   </ul>
-                  <TransitionLink href={`/projetos/${p.slug}`} className="group mt-7 inline-flex items-center gap-2 text-sm text-white/70 hover:text-white">
-                    Ver detalhes <span className="transition-transform group-hover:translate-x-1">→</span>
-                  </TransitionLink>
+                  <div className="mt-7 flex flex-wrap items-center gap-5 text-sm">
+                    <TransitionLink href={`/projetos/${p.slug}`} className="group inline-flex items-center gap-2 text-white/70 hover:text-white">
+                      Ver detalhes <span className="transition-transform group-hover:translate-x-1">→</span>
+                    </TransitionLink>
+                    {p.url && <a href={p.url} target="_blank" rel="noopener noreferrer" className="text-white/45 hover:text-white">Site ↗</a>}
+                    {p.repo && <a href={p.repo} target="_blank" rel="noopener noreferrer" className="text-white/45 hover:text-white">Código ↗</a>}
+                  </div>
                 </Reveal>
               </div>
             </li>
           );
         })}
       </ol>
+
     </section>
   );
 }

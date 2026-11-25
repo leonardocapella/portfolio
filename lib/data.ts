@@ -30,6 +30,7 @@ export type Project = {
   solution: string;
   result: string;
   url?: string; // site público
+  repo?: string; // repositório público (só quando é público)
   image?: string; // print real (substitui a demo ilustrativa)
   imageCaption?: string;
 };
@@ -75,7 +76,7 @@ export const PROJECTS: Project[] = [
     solution: "Um diagnóstico online em etapas, com a identidade da V4, que o lead responde antes da reunião. As respostas vão direto para a planilha do time.",
     result: "O time chega na primeira reunião com o cenário do lead mapeado e o horário já agendado.",
     url: "https://leonardocapella.github.io/diagnostico-v4/",
-    image: "/assets/projetos/diagnostico.jpg",
+    repo: "https://github.com/leonardocapella/diagnostico-v4",
   },
   {
     slug: "cobranca",
@@ -110,6 +111,31 @@ export const PROJECTS: Project[] = [
     problem: "O time comercial perdia tempo discando número por número e ouvindo caixa postal.",
     solution: "Um discador em Python sobre SIP, que reconhece quando cai na caixa postal e encerra a ligação sozinho. A versão web tem instalador para os agentes e acesso remoto por Cloudflare Tunnel.",
     result: "O agente só fala com quem atendeu, e cada PC novo entra pelo instalador da própria página.",
+  },
+  {
+    slug: "atendimento-ia",
+    title: "Atendimento com IA no WhatsApp",
+    tag: "Cliente · IA",
+    color: "#25D366",
+    short: "Substituto auto-hospedado de uma plataforma paga de atendimento: a IA qualifica o lead no WhatsApp e entrega o lead quente ao vendedor.",
+    long: [
+      "Sistema de atendimento por WhatsApp para uma empresa de armários sob medida, feito para substituir uma plataforma paga por uma stack auto-hospedada e de código aberto.",
+      "São três peças: uma ponte com o WhatsApp por QR code, o Chatwoot como central de atendimento e um app em Node que é o cérebro — lê a mensagem, consulta o modelo de linguagem, responde e decide quando a conversa tem de ir para uma pessoa.",
+      "O ponto difícil não foi conversar, foi saber quando calar. A decisão de passar para o humano está no código, não na IA: só é lead quente quem tem interesse, prazo, cidade e sinal claro de compra. A partir daí a IA para de responder, a conversa é marcada como urgente e vai com a qualificação anotada. Se o vendedor não responder em 10 minutos, o gestor é avisado.",
+    ],
+    features: [
+      "Handoff decidido por regra no código, não pela IA",
+      "Mensagens picadas agrupadas numa resposta só (debounce)",
+      "SLA com alerta ao gestor se o vendedor não assume",
+      "Transbordo imediato a pedido do cliente, por áudio repetido ou erro técnico",
+      "Repositório público, com testes que rodam sem Docker",
+    ],
+    tech: ["Node.js", "Chatwoot", "Docker Compose", "PostgreSQL", "LLM"],
+    snippet: "qualifica → lead quente → humano",
+    problem: "O atendimento no WhatsApp dependia de uma plataforma paga por conta, e o vendedor recebia tudo misturado: curioso, pesquisa de preço e cliente pronto para fechar.",
+    solution: "Uma stack própria e auto-hospedada: a IA atende, faz uma pergunta por vez e anota interesse, medidas, prazo e cidade. Quando a qualificação fecha, a conversa vira lead quente e vai para o vendedor com tudo registrado.",
+    result: "Código aberto e testável localmente, com a arquitetura e o deploy documentados no repositório. A virada do número em produção depende do servidor definitivo.",
+    repo: "https://github.com/leonardocapella/atendimento-ia",
   },
   {
     slug: "polymarket-scanner",
@@ -177,7 +203,6 @@ export const PROJECTS: Project[] = [
     problem: "A loja vendia só pelo Instagram e precisava de uma vitrine com a cara da marca, preto e dourado, que levasse direto para a compra.",
     solution: "Layout próprio em HTML/CSS/JS com catálogo filtrável e compra pelo WhatsApp, depois levado para a Nuvemshop para carrinho e estoque.",
     result: "Vitrine completa com páginas institucionais e estoque por tamanho integrado, ajustada várias vezes a partir do feedback do dono.",
-    image: "/assets/projetos/ls-conceito.jpg",
   },
   {
     slug: "joao-kirst",
@@ -196,7 +221,7 @@ export const PROJECTS: Project[] = [
     solution: "Site estático rápido com hero de impacto, galeria organizada por tipo de peça e contato pelo WhatsApp, em domínio próprio.",
     result: "Site no ar em joaokirst.art.br, com o portfólio dele organizado num link só.",
     url: "https://joaokirst.art.br/",
-    image: "/assets/projetos/joao-kirst.jpg",
+    repo: "https://github.com/leonardocapella/portfolio-joao-kirst",
   },
   {
     slug: "aivio-studio",
@@ -215,8 +240,115 @@ export const PROJECTS: Project[] = [
     solution: "A proposta de produto inteira numa landing: agentes que acham clientes na região, atendem pelo WhatsApp e criam o site em 1 clique.",
     result: "Landing publicada que apresenta a proposta e os planos.",
     url: "https://leonardocapella.github.io/site-ai-studio/",
-    image: "/assets/projetos/aivio.jpg",
-    imageCaption: "prévia ilustrativa",
+  },
+  {
+    slug: "rumo-a-ufrgs",
+    title: "Rumo à UFRGS",
+    tag: "Pessoal · educação",
+    // Feito para a namorada do Leonardo, que estuda para passar na UFRGS. Usuária real, com rotina de estudo real.
+    color: "#4EA8FF",
+    short: "Plataforma de estudo que fiz para a minha namorada, que estuda para passar na UFRGS: questões por matéria, simulados, revisão de erros e acessibilidade.",
+    long: [
+      "Plataforma de preparação para o vestibular que fiz para a minha namorada, que estuda para passar na UFRGS. Ter uma usuária de verdade, com rotina de estudo real, mudou o projeto: o que ela não usava eu tirava, e o que ela pedia entrava na semana seguinte.",
+      "Tem banco de questões separado por matéria (português, literatura, inglês, história, geografia, biologia, química, física e matemática), simulados, revisão dos erros, provas oficiais e uma tela de analytics do próprio desempenho.",
+      "A parte que mais me ensinou foi a acessibilidade: tema escuro, alto contraste, fonte para dislexia, reduzir movimento e tamanho de fonte, com a preferência guardada no navegador e aplicada em todas as telas.",
+    ],
+    features: [
+      "Banco de questões por matéria com simulados",
+      "Revisão focada nos erros anteriores",
+      "Painel do próprio desempenho",
+      "Acessibilidade: alto contraste, fonte para dislexia e reduzir movimento",
+    ],
+    tech: ["React", "TypeScript", "Vite", "Tailwind", "GitHub Pages"],
+    snippet: "questões → simulado → revisão",
+    problem: "Minha namorada estuda para passar na UFRGS, mas o material estava espalhado entre cadernos, PDFs e sites, e ela não sabia quais erros mais repetia.",
+    solution: "Um app React com banco de questões por matéria, simulados cronometrados, revisão dos erros e preferências de acessibilidade que valem em todas as telas.",
+    result: "Plataforma no ar e em uso real por ela, com o ciclo de estudar, simular e revisar fechado num lugar só.",
+    url: "https://leonardocapella.github.io/rumo-a-ufrgs/",
+    repo: "https://github.com/leonardocapella/rumo-a-ufrgs",
+  },
+  {
+    slug: "vagas-v4",
+    title: "Sistema de vagas",
+    tag: "V4 Mendes · RH",
+    color: "#F2994A",
+    short: "Página pública de vagas com candidatura e currículo; a IA lê o PDF e devolve uma nota interna de triagem.",
+    long: [
+      "Página pública com as vagas abertas da unidade. O candidato se inscreve anexando o currículo, e a candidatura cai numa planilha com o anexo guardado e uma nota de 0 a 10 dada por IA que leu o PDF, para ordenar a fila de triagem.",
+      "A nota é interna de propósito: se o candidato a vê, ele se recandidata ajustando as respostas e a nota deixa de medir o que interessa. E ela é atalho de triagem, não veredito — quem decide é a pessoa.",
+      "O que mais me importou aqui foi a degradação: se o upload do currículo falhar, ou se a IA recusar ou cair, a candidatura é gravada do mesmo jeito com o erro registrado. Nenhuma falha perde candidato.",
+    ],
+    features: [
+      "Abrir e fechar vaga mexendo num arquivo só",
+      "Link direto para uma vaga específica",
+      "Nota de 0 a 10 com justificativa, em JSON garantido por schema",
+      "Campo-armadilha contra robô, invisível também para leitor de tela",
+      "Nenhuma falha de upload ou de IA perde a candidatura",
+    ],
+    tech: ["HTML/CSS", "JavaScript", "Apps Script", "Google Sheets", "LLM"],
+    snippet: "currículo → nota 0–10 → fila",
+    problem: "As vagas eram divulgadas soltas e os currículos chegavam por canais diferentes, sem fila nem critério para ordenar a triagem.",
+    solution: "Uma página estática com formulário e anexo, gravando em planilha por Apps Script, com a IA lendo o PDF e devolvendo nota e justificativa sob um schema fixo.",
+    result: "Página no ar e escala da nota conferida com currículos de teste antes de publicar — de candidato com meta batida e CRM a arquivo que nem era currículo.",
+    url: "https://leonardocapella.github.io/vagas-v4/",
+    repo: "https://github.com/leonardocapella/vagas-v4",
+  },
+  {
+    slug: "mini-pages",
+    title: "Mini-Pages System",
+    tag: "Pessoal · automação",
+    color: "#9D7BFF",
+    short: "Pipeline em Node que vai do lead ao site publicado: coleta, qualificação, geração da página e criativos.",
+    long: [
+      "Sistema em Node que automatiza a esteira de vender páginas pequenas para comércios locais: coleta de leads, qualificação, abordagem, geração do site a partir de templates, publicação e criação dos criativos de Instagram.",
+      "Cada etapa é um comando separado, e a de abordagem tem modo de ensaio: roda tudo e mostra o que seria enviado, sem enviar nada. O envio real é um passo explícito, nunca o padrão.",
+    ],
+    features: [
+      "Uma etapa, um comando",
+      "Modo de ensaio antes de qualquer envio",
+      "Templates de página com animação de scroll",
+      "Geração de criativos por script",
+      "Testes de ponta a ponta passando",
+    ],
+    tech: ["Node.js", "JavaScript", "CSV", "CLI"],
+    snippet: "lead → qualifica → site → criativo",
+    problem: "Vender páginas simples para comércio local é repetitivo: achar o lead, qualificar, abordar, montar o site e fazer os criativos, um por um.",
+    solution: "Um pipeline em Node com cada etapa isolada em um comando, templates de página reaproveitáveis e geração de criativos por script.",
+    result: "Pipeline completo rodando localmente com os testes de ponta a ponta passando, do lead à página gerada.",
+  },
+  {
+    slug: "diagnostico-copy",
+    title: "Diagnóstico para copy",
+    tag: "Pessoal · IA",
+    color: "#FF6FAE",
+    short: "Ficha da empresa que, respondida, gera com IA a base de copy: posicionamento, dores, objeções e legendas.",
+    long: [
+      "Aplicação web onde a pessoa responde uma ficha sobre a própria empresa e recebe, gerada por IA, uma base de copy pronta para usar: posicionamento, dores do cliente, objeções e legendas.",
+      "Foi onde experimentei uma stack mais moderna de React: TanStack Start com router e query, formulários com validação por schema, autenticação e área logada, além de leitura de PDF e documentos enviados.",
+    ],
+    features: ["Autenticação e área logada", "Ficha com validação por schema", "Geração da base de copy por IA", "Leitura de PDF e documentos enviados"],
+    tech: ["TypeScript", "React", "TanStack Start", "Tailwind", "Supabase"],
+    snippet: "ficha → base de copy",
+    problem: "Escrever copy de um cliente começa sempre do zero, repetindo as mesmas perguntas sobre posicionamento, dores e objeções.",
+    solution: "Uma ficha única que o cliente responde e que vira, com IA, a base de copy — posicionamento, dores, objeções e legendas prontas para revisão.",
+    result: "Aplicação construída com autenticação, área logada e geração da base de copy a partir da ficha.",
+  },
+  {
+    slug: "barauna",
+    title: "Baraúna Soluções Biológicas",
+    tag: "V4 Mendes · cliente",
+    color: "#5FBF6A",
+    short: "Landing de uma empresa de compostagem industrial, com calculadora e diagnóstico para grandes geradores de resíduo.",
+    long: [
+      "Landing da Baraúna Soluções Biológicas, cliente da unidade da V4 Company onde trabalho. A empresa atua com compostagem industrial e valorização de resíduos orgânicos para grandes geradores e agroindústrias.",
+      "A página cobre o ciclo inteiro de uma venda consultiva: dores, como funciona, vitrine de tecnologia, linha do tempo, cases, FAQ e contato, com uma calculadora e um modal de diagnóstico para o visitante se qualificar antes de falar com o time.",
+    ],
+    features: ["Calculadora na página", "Modal de diagnóstico para qualificar o visitante", "Linha do tempo e vitrine de tecnologia", "Contato direto pelo WhatsApp"],
+    tech: ["React", "TypeScript", "Vite", "Tailwind"],
+    snippet: "resíduo → diagnóstico → contato",
+    problem: "Um cliente de biotecnologia da unidade precisava explicar um processo técnico e qualificar quem chega antes da conversa comercial.",
+    solution: "Landing em React que conduz o visitante das dores até o contato, com calculadora e modal de diagnóstico para ele se qualificar sozinho.",
+    result: "Site completo entregue, com o fluxo de qualificação dentro da própria página.",
   },
 ];
 

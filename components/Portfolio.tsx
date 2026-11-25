@@ -1,23 +1,22 @@
 "use client";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { CERTS, CREDENTIALS, GROUPS, KEYS, LANGS, PROFILE, PROJECTS } from "@/lib/data";
+import { CERTS, CREDENTIALS, GROUPS, KEYS, LANGS, PROFILE } from "@/lib/data";
 import Reveal, { RevealWords } from "./Reveal";
-import TransitionLink from "./TransitionLink";
 
-const TABS = ["Projetos", "Credenciais", "Tech Stack"] as const;
+const TABS = ["Credenciais", "Tech Stack"] as const;
 const card = { initial: { opacity: 0, y: 40 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, y: -20 } };
 
 export default function Portfolio() {
-  const [tab, setTab] = useState<(typeof TABS)[number]>("Projetos");
+  const [tab, setTab] = useState<(typeof TABS)[number]>("Credenciais");
   return (
     <section id="portfolio" className="relative z-10 mx-auto max-w-6xl px-5 py-28 md:px-8 md:py-40">
       <div className="text-center">
-        <h2 className="title-xl text-[clamp(34px,5.5vw,72px)]"><RevealWords text="Portfólio" /></h2>
-        <Reveal delay={0.1}><p className="mx-auto mt-4 max-w-lg text-white/50">Projetos reais do meu dia a dia: automações, painéis, integrações e ferramentas de IA.</p></Reveal>
+        <h2 className="title-xl text-[clamp(34px,5.5vw,72px)]"><RevealWords text="Credenciais" /></h2>
+        <Reveal delay={0.1}><p className="mx-auto mt-4 max-w-lg text-white/50">Formação, idiomas e as ferramentas que uso no dia a dia.</p></Reveal>
       </div>
       <Reveal delay={0.15}>
-        <div role="tablist" className="glass mx-auto mt-10 grid max-w-2xl grid-cols-3 gap-1 rounded-2xl p-1.5">
+        <div role="tablist" className="glass mx-auto mt-10 grid max-w-sm grid-cols-2 gap-1 rounded-2xl p-1.5">
           {TABS.map((t) => (
             <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)}
               className={`relative rounded-xl py-3 text-sm transition-colors ${tab === t ? "text-white" : "text-white/45 hover:text-white/80"}`}>
@@ -30,31 +29,6 @@ export default function Portfolio() {
 
       <div className="mt-12 min-h-[400px]">
         <AnimatePresence mode="wait">
-          {tab === "Projetos" && (
-            <motion.ul key="p" className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" exit={{ opacity: 0 }}>
-              {PROJECTS.map((p, i) => (
-                <motion.li key={p.slug} {...card} transition={{ delay: i * 0.06, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}>
-                  <TransitionLink href={`/projetos/${p.slug}`}
-                    className="glass group flex h-full flex-col overflow-hidden rounded-2xl transition-[border-color,transform] duration-500 hover:-translate-y-1.5 hover:border-white/25">
-                    <div className="relative grid h-40 place-items-center overflow-hidden border-b border-white/[.07]"
-                      style={{ background: `radial-gradient(120% 120% at 100% 0%, ${p.color}26, transparent 60%)` }}>
-                      <span className="absolute left-4 top-3 font-mono text-xs" style={{ color: p.color }}>{String(i + 1).padStart(2, "0")}</span>
-                      <p className="px-6 text-center font-mono text-xs text-white/70 transition-transform duration-500 group-hover:scale-105">{p.snippet}</p>
-                    </div>
-                    <div className="flex flex-1 flex-col p-5">
-                      <p className="label !text-[10px]" style={{ color: p.color }}>{p.tag}</p>
-                      <h3 className="mt-2 font-[family-name:var(--font-display)] text-lg font-bold">{p.title}</h3>
-                      <p className="mt-2 text-sm leading-relaxed text-white/50">{p.short}</p>
-                      <div className="mt-auto flex items-center justify-between pt-5">
-                        <span className="font-mono text-[11px] text-white/35">{p.tech.slice(0, 2).join(" · ")}</span>
-                        <span className="rounded-lg border border-white/10 px-3 py-1.5 text-xs transition-colors group-hover:bg-white group-hover:text-black">Detalhes →</span>
-                      </div>
-                    </div>
-                  </TransitionLink>
-                </motion.li>
-              ))}
-            </motion.ul>
-          )}
           {tab === "Credenciais" && (
             <motion.div key="c" exit={{ opacity: 0 }}>
               <ul className="grid gap-5 sm:grid-cols-3">

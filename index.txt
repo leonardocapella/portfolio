@@ -1,0 +1,41 @@
+1:"$Sreact.fragment"
+2:"/portfolio/_next/static/chunks/3deltvgcupuol.js"
+3:"/portfolio/_next/static/chunks/0geje4p-l_81-.js"
+4:"/portfolio/_next/static/chunks/03o29tuxy_v_l.js"
+5:I[47420,["$2","$3","$4"],"default"]
+6:I[69268,["$2","$3","$4"],"default"]
+7:I[42724,["$2","$3","$4"],"default"]
+8:I[39756,["$2","$3","$4"],"default"]
+9:I[37457,["$2","$3","$4"],"default"]
+a:I[36977,["$2","$3","$4"],"default"]
+c:"/portfolio/_next/static/chunks/3w6ml9p0w8u2z.js"
+d:"/portfolio/_next/static/chunks/3kv_5l5skiimb.js"
+e:"/portfolio/_next/static/chunks/3doc1zl79e0jm.js"
+f:I[11837,["$2","$3","$4","$c","$d","$e"],"default"]
+10:I[92349,["$2","$3","$4","$c","$d","$e"],"default"]
+11:I[79356,["$2","$3","$4","$c","$d","$e"],"default"]
+12:I[44413,["$2","$3","$4","$c","$d","$e"],"default"]
+13:I[78369,["$2","$3","$4","$c","$d","$e"],"default"]
+14:I[35203,["$2","$3","$4","$c","$d","$e"],"default"]
+15:I[63971,["$2","$3","$4","$c","$d","$e"],"default"]
+16:I[97367,["$2","$3","$4"],"OutletBoundary"]
+17:"$Sreact.suspense"
+19:"ViewportBoundary"
+1a:I[97367,["$2","$3","$4"],"$19"]
+1c:"MetadataBoundary"
+1d:I[97367,["$2","$3","$4"],"$1c"]
+1f:I[68027,["$2","$3","$4"],"default",1]
+:HL["/portfolio/_next/static/chunks/0gpjkfftxc3dz.css","style"]
+:HL["/portfolio/_next/static/media/poppins_300-s.p.1p4ocyl7vz09e.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/portfolio/_next/static/media/poppins_400-s.p.26axoheojcvao.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/portfolio/_next/static/media/poppins_500-s.p.01tiwsu2c6vk3.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/portfolio/_next/static/media/poppins_600-s.p.14nztc_w4mkh_.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/portfolio/_next/static/media/unbounded_400-s.p.1tz5lbfnvawi1.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/portfolio/_next/static/media/unbounded_700-s.p.1tz5lbfnvawi1.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/portfolio/_next/static/media/unbounded_900-s.p.1tz5lbfnvawi1.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+b:[["children",{"s":"__PAGE__","h":512,"d":{"r":["$","$1","c",{"children":[[["$","$Lf",null,{}],["$","div",null,{"className":"blueprint"}],["$","div",null,{"className":"vignette"}],["$","main",null,{"className":"relative","children":[["$","$L10",null,{}],["$","$L11",null,{}],["$","$L12",null,{}],["$","$L13",null,{}],["$","$L14",null,{}],["$","$L15",null,{}]]}]],[["$","script","script-0",{"src":"/portfolio/_next/static/chunks/3w6ml9p0w8u2z.js","async":true,"nonce":"$undefined"}],["$","script","script-1",{"src":"/portfolio/_next/static/chunks/3kv_5l5skiimb.js","async":true,"nonce":"$undefined"}],["$","script","script-2",{"src":"/portfolio/_next/static/chunks/3doc1zl79e0jm.js","async":true,"nonce":"$undefined"}]],["$","$L16",null,{"children":["$","$17",null,{"name":"Next.MetadataOutlet","children":"$@18"}]}]]}],"p":false,"v":null}}]]
+0:{"P":null,"c":["",""],"q":"","i":false,"t":{"t":{"s":"","h":528,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/portfolio/_next/static/chunks/0gpjkfftxc3dz.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/portfolio/_next/static/chunks/3deltvgcupuol.js","async":true,"nonce":"$undefined"}],["$","script","script-1",{"src":"/portfolio/_next/static/chunks/0geje4p-l_81-.js","async":true,"nonce":"$undefined"}],["$","script","script-2",{"src":"/portfolio/_next/static/chunks/03o29tuxy_v_l.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"pt-BR","className":"_2HYR1a_variable L_rk0W_variable","children":["$","body",null,{"children":[["$","$L5",null,{}],["$","$L6",null,{}],["$","$L7",null,{}],["$","$L8",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L9",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}],["$","$La",null,{}]]}]}]]}],"p":false,"v":null},"c":"$Qb"},"h":{"r":["$","$1","h",{"children":[null,["$","$L1a",null,{"children":"$L1b"}],["$","$L1d",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$17",null,{"name":"Next.Metadata","children":"$L1e"}]}],null]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],"p":false,"v":null}},"m":"$undefined","G":["$1f",[["$","link","0",{"rel":"stylesheet","href":"/portfolio/_next/static/chunks/0gpjkfftxc3dz.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]]],"S":true,"r":"$undefined","s":"$undefined","a":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"fv9FQb7cIGYmeLf4f1Nqw"}
+1b:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","meta","2",{"name":"theme-color","content":"#070707"}]]
+20:I[27201,["$2","$3","$4"],"IconMark"]
+18:null
+1e:[["$","title","0",{"children":"Leonardo Capella · Analista de Dados & Automações"}],["$","meta","1",{"name":"description","content":"Portfólio de Leonardo Capella, Analista de Dados & Automações em Porto Alegre, RS. Automação de processos, integrações, CRM e IA aplicada. Aberto a oportunidades como Analista de Dados / Automações Júnior."}],["$","meta","2",{"property":"og:title","content":"Leonardo Capella · Analista de Dados & Automações"}],["$","meta","3",{"property":"og:description","content":"Portfólio de Leonardo Capella, Analista de Dados & Automações em Porto Alegre, RS. Automação de processos, integrações, CRM e IA aplicada. Aberto a oportunidades como Analista de Dados / Automações Júnior."}],["$","meta","4",{"property":"og:site_name","content":"Leonardo Capella"}],["$","meta","5",{"property":"og:locale","content":"pt_BR"}],["$","meta","6",{"property":"og:type","content":"website"}],["$","meta","7",{"name":"twitter:card","content":"summary_large_image"}],["$","meta","8",{"name":"twitter:title","content":"Leonardo Capella · Analista de Dados & Automações"}],["$","meta","9",{"name":"twitter:description","content":"Portfólio de Leonardo Capella, Analista de Dados & Automações em Porto Alegre, RS. Automação de processos, integrações, CRM e IA aplicada. Aberto a oportunidades como Analista de Dados / Automações Júnior."}],["$","link","10",{"rel":"icon","href":"/portfolio/icon.svg?icon.1p75nxs4c-fie.svg","sizes":"any","type":"image/svg+xml"}],["$","$L20","11",{}]]

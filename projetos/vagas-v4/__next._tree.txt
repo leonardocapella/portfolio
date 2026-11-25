@@ -1,0 +1,12 @@
+:HL["/portfolio/_next/static/chunks/0gpjkfftxc3dz.css","style"]
+:HL["/portfolio/_next/static/media/poppins_300-s.p.1p4ocyl7vz09e.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/portfolio/_next/static/media/poppins_400-s.p.26axoheojcvao.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/portfolio/_next/static/media/poppins_500-s.p.01tiwsu2c6vk3.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/portfolio/_next/static/media/poppins_600-s.p.14nztc_w4mkh_.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/portfolio/_next/static/media/unbounded_400-s.p.1tz5lbfnvawi1.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/portfolio/_next/static/media/unbounded_700-s.p.1tz5lbfnvawi1.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/portfolio/_next/static/media/unbounded_900-s.p.1tz5lbfnvawi1.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+3:[["children",{"s":"__PAGE__","h":160}]]
+2:[["children",{"s":{"n":"slug","t":"d","k":"vagas-v4","s":[]},"h":96,"c":"$Q3"}]]
+1:[["children",{"s":"projetos","h":96,"c":"$Q2"}]]
+0:{"b":"fv9FQb7cIGYmeLf4f1Nqw","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
